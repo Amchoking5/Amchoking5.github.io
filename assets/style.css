@@ -200,7 +200,8 @@ h3.group small { font-weight: 400; font-size: .82rem; margin-left: 8px; }
   margin-right: 6px; vertical-align: 1px; background: var(--work); }
 .j-legend .edu::before { background: var(--edu); }
 
-.ms-wrap { overflow-x: auto; scrollbar-width: thin; padding-bottom: 6px; }
+.ms-wrap { overflow-x: auto; overflow-y: hidden; scrollbar-width: none; padding: 4px 0 6px; }
+.ms-wrap::-webkit-scrollbar { display: none; }   /* 스크롤바는 숨기고 가로 스와이프·트랙패드 스크롤은 유지 */
 .ms-line { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(8, minmax(92px, 1fr));
   position: relative; min-width: 736px; }
 .ms-line::before { content: ""; position: absolute; left: calc(100% / 16); right: calc(100% / 16); top: 31px; height: 2px;
