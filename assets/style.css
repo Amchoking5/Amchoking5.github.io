@@ -156,3 +156,4 @@ h3.group small { font-weight: 400; font-size: .82rem; margin-left: 8px; }
 .lightbox p { color: #ddd; margin: 10px 0 0; text-align: center; }
 .proj-nav { display: flex; justify-content: space-between; gap: 12px; margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line); font-size: .92rem; }
 [hidden] { display: none !important; }
+.comments { min-height: 120px; }

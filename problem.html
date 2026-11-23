@@ -59,7 +59,9 @@
         <h2>풀이 코드</h2>
         ${p.codes.map(c => `<div class="code-block"><div class="fname">${esc(c.name)}</div>
           <pre><code class="language-${esc(c.lang)}">${esc(c.code)}</code></pre></div>`).join("")}
+        <h2>댓글</h2><div class="comments" id="comments"></div>
         <p style="margin-top:40px"><a href="algorithm.html">← 목록으로</a></p>`;
+      mountComments(document.getElementById("comments"), `problem/${p.id}`);
 
       el.querySelectorAll("pre code").forEach(b => hljs.highlightElement(b));
       el.querySelectorAll(".content").forEach(c => renderMathInElement(c, {
