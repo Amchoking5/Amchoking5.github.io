@@ -4,10 +4,11 @@ const A = id => `https://github.com/user-attachments/assets/${id}`;
 const TP = "https://github.com/Amchoking5/Team_Project/tree/main/";
 
 const PROJECT_GROUPS = [
-  { id: "naver", title: "네이버클라우드 인턴", note: "Video Generation 부서 · 2026.02 – 2026.08" },
-  { id: "solid", title: "솔리드이엔지 인턴", note: "AI 부서 인턴 및 프리랜서 · 2024.06 – 2025.05" },
-  { id: "team", title: "팀 프로젝트", note: "동아리 및 수업에서 진행" },
-];
+  { id: "naver", short: "네이버클라우드", title: "네이버클라우드 인턴", note: "Video Generation 부서 · 2026.02 – 2026.08" },
+  { id: "solid", short: "솔리드이엔지", title: "솔리드이엔지 인턴", note: "AI 부서 인턴 및 프리랜서 · 2024.06 – 2025.05" },
+  { id: "team", short: "팀 프로젝트", title: "팀 프로젝트", note: "동아리 및 수업에서 진행" },
+  { id: "toy", short: "토이 프로젝트", title: "토이 프로젝트", note: "직접 기획하고 만든 개인 프로젝트" },
+]
 
 const PROJECTS = [
   {
