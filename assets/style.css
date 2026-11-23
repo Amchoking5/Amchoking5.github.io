@@ -249,3 +249,8 @@ h3.group small { font-weight: 400; font-size: .82rem; margin-left: 8px; }
   .j-card { margin-left: 8px; }
 }
 @media (prefers-reduced-motion: reduce) { .j:first-child .j-dot::after { animation: none; } }
+
+/* ---------- lightbox progressive load ---------- */
+.lightbox img { transition: filter .3s ease; }
+.lightbox img.lb-loading { filter: blur(2px) saturate(.9); }
+.lightbox .lb-status { font-size: .8rem; color: #aaa; min-height: 1.2em; margin-top: 4px; }

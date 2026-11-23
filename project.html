@@ -15,7 +15,7 @@
   </header>
 
   <main class="wrap" id="post"><p class="empty">불러오는 중…</p></main>
-  <div class="lightbox" id="lightbox" hidden><div><img id="lb-img" alt=""><p id="lb-cap"></p></div></div>
+  <div class="lightbox" id="lightbox" hidden><div><img id="lb-img" alt=""><p id="lb-cap"></p><p class="lb-status" id="lb-status"></p></div></div>
 
   <footer><div class="wrap">© 유교준 · 회사 프로젝트는 보안상 코드 대신 데모 결과와 아키텍처 위주로 정리했습니다.</div></footer>
 
@@ -61,11 +61,11 @@
         ${p.gallery.length ? `<h2>결과물</h2><div class="gallery">${p.gallery.map(([cap, src, type]) =>
           type === "video"
             ? `<figure style="cursor:default"><video src="${src}" controls muted loop playsinline preload="metadata"></video><figcaption>${esc(cap)}</figcaption></figure>`
-            : `<figure data-src="${src}" data-cap="${esc(cap)}"><img src="${src}" alt="${esc(cap)}" loading="lazy"><figcaption>${esc(cap)}</figcaption></figure>`
+            : `<figure data-src="${src}" data-thumb="${thumbOf(src)}" data-cap="${esc(cap)}"><img src="${thumbOf(src)}" ${fallbackAttr(src)} alt="${esc(cap)}" loading="lazy" decoding="async"><figcaption>${esc(cap)}</figcaption></figure>`
         ).join("")}</div>` : ""}
 
         ${p.structure.length ? `<h2>구조</h2>` + p.structure.map(([cap, src]) =>
-          `<figure class="figure-wide" data-src="${src}" data-cap="${esc(cap)}"><img src="${src}" alt="${esc(cap)}" loading="lazy"><figcaption>${esc(cap)}</figcaption></figure>`).join("") : ""}
+          `<figure class="figure-wide" data-src="${src}" data-thumb="${thumbOf(src, 1400)}" data-cap="${esc(cap)}"><img src="${thumbOf(src, 1400)}" ${fallbackAttr(src)} alt="${esc(cap)}" loading="lazy" decoding="async"><figcaption>${esc(cap)}</figcaption></figure>`).join("") : ""}
 
         <h2>댓글</h2><div class="comments" id="comments"></div>
 
@@ -80,7 +80,16 @@
       el.addEventListener("click", e => {
         const fig = e.target.closest("figure[data-src]");
         if (!fig) return;
-        document.getElementById("lb-img").src = fig.dataset.src;
+        const img = document.getElementById("lb-img"), status = document.getElementById("lb-status");
+        const full = fig.dataset.src, shown = fig.querySelector("img").currentSrc || fig.dataset.thumb;
+        img.src = shown;                         // 이미 받아 둔 썸네일을 먼저 바로 표시
+        img.classList.add("lb-loading");
+        status.textContent = "원본 불러오는 중…";
+        const hi = new Image();
+        hi.onload = () => { if (lb.dataset.cur === full) { img.src = full; img.classList.remove("lb-loading"); status.textContent = ""; } };
+        hi.onerror = () => { if (lb.dataset.cur === full) { img.classList.remove("lb-loading"); status.textContent = ""; } };
+        lb.dataset.cur = full;
+        hi.src = full;
         document.getElementById("lb-cap").textContent = fig.dataset.cap;
         lb.hidden = false;
       });

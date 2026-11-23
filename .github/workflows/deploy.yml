@@ -40,10 +40,23 @@ jobs:
       - name: Build data
         run: python scripts/build_data.py --src _problem_solving --out data
 
+      # 프로젝트 이미지 썸네일: 캐시에 있는 건 재사용하고 새 이미지만 받아서 변환
+      - name: Restore thumbnail cache
+        uses: actions/cache@v4
+        with:
+          path: thumbs
+          key: thumbs-${{ hashFiles('assets/projects.js', 'scripts/build_thumbs.py') }}
+          restore-keys: thumbs-
+
+      - name: Build thumbnails
+        run: |
+          pip install --quiet pillow
+          python scripts/build_thumbs.py --out thumbs
+
       - name: Prepare site
         run: |
           mkdir _site
-          cp -r *.html assets data _site/
+          cp -r *.html assets data thumbs _site/
           touch _site/.nojekyll
           # 캐시 무효화: assets/*.js, *.css 주소에 커밋 버전을 붙인다
           v="${GITHUB_SHA::7}-${GITHUB_RUN_NUMBER}"

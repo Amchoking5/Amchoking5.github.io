@@ -132,7 +132,7 @@
       const cardHTML = p => `
         <a class="card" href="project.html?id=${p.id}">
           ${p.gallery.length && p.gallery[0][2] !== "video"
-            ? `<div class="thumb"><img src="${p.gallery[0][1]}" alt="" loading="lazy"></div>`
+            ? `<div class="thumb"><img src="${thumbOf(p.gallery[0][1])}" ${fallbackAttr(p.gallery[0][1])} alt="" loading="lazy" decoding="async"></div>`
             : `<div class="thumb thumb-emoji">${p.emoji}</div>`}
           <h4>${p.emoji} ${esc(p.title)}</h4>
           <p class="period">${esc(p.subtitle)} · ${esc(p.period)}</p>

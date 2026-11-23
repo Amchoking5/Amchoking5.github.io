@@ -3,6 +3,14 @@
 const A = id => `https://github.com/user-attachments/assets/${id}`;
 const TP = "https://github.com/Amchoking5/Team_Project/tree/main/";
 
+// 배포 시 scripts/build_thumbs.py가 만든 WebP 썸네일 주소 (없으면 원본으로 대체)
+const thumbOf = (src, w = 640) => {
+  const m = String(src).match(/user-attachments\/assets\/([0-9a-f-]{36})$/);
+  return m ? `thumbs/${m[1]}-${w}.webp` : src;
+};
+// <img>에 붙여서, 썸네일이 없으면 원본을 불러오게 하는 onerror 속성
+const fallbackAttr = src => `onerror="this.onerror=null;this.src='${src}'"`;
+
 const PROJECT_GROUPS = [
   { id: "naver", short: "네이버클라우드", title: "네이버클라우드 인턴", note: "Video Generation 부서 · 2026.02 – 2026.08" },
   { id: "solid", short: "솔리드이엔지", title: "솔리드이엔지 인턴", note: "AI 부서 인턴 및 프리랜서 · 2024.06 – 2025.05" },
