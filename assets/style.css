@@ -254,3 +254,36 @@ h3.group small { font-weight: 400; font-size: .82rem; margin-left: 8px; }
 .lightbox img { transition: filter .3s ease; }
 .lightbox img.lb-loading { filter: blur(2px) saturate(.9); }
 .lightbox .lb-status { font-size: .8rem; color: #aaa; min-height: 1.2em; margin-top: 4px; }
+
+/* ---------- journey: 기간을 구간(캡슐)으로 표시 ---------- */
+.journey { --yw: 68px; --dw: 28px; }
+.j { align-items: stretch; }
+.j-years { display: flex; flex-direction: column; justify-content: space-between; text-align: right;
+  padding: 12px 6px 12px 0; font-variant-numeric: tabular-nums; line-height: 1.3; }
+.j-end { font-weight: 700; font-size: .88rem; color: var(--fg); }
+.j-start { font-size: .8rem; color: var(--muted); }
+.j-range { position: relative; justify-self: center; width: 8px; margin: 18px 0; border-radius: 4px;
+  background: color-mix(in srgb, var(--work) 30%, var(--bg)); z-index: 1; transform-origin: top; }
+.j.edu .j-range { background: color-mix(in srgb, var(--edu) 30%, var(--bg)); }
+.j-range::before, .j-range::after { content: ""; position: absolute; left: 50%; width: 14px; height: 14px;
+  margin-left: -7px; border-radius: 50%; background: var(--bg); border: 3px solid var(--work);
+  box-shadow: 0 0 0 3px var(--bg); box-sizing: border-box; transition: transform .25s; }
+.j-range::before { top: -7px; }      /* 종료 */
+.j-range::after { bottom: -7px; }    /* 시작 */
+.j.edu .j-range::before, .j.edu .j-range::after { border-color: var(--edu); }
+.j:first-child .j-range::before { background: var(--work); }
+.j:hover .j-range::before, .j:hover .j-range::after { transform: scale(1.2); }
+.j-when { display: none; }
+@media (max-width: 560px) {
+  .journey { --yw: 0px; --dw: 24px; }
+  .j-years { display: none; }
+  .j-when { display: inline; }
+}
+
+/* 등장 애니메이션: 캡슐이 위(종료)에서 아래(시작)로 늘어남 */
+.journey.reveal .j .j-range { transform: scaleY(0); }
+.journey.reveal .j .j-years { opacity: 0; }
+.journey.reveal .j.in .j-range { transform: none; transition: transform .6s cubic-bezier(.2,.8,.2,1); }
+.journey.reveal .j.in .j-years { opacity: 1; transition: opacity .5s ease .1s; }
+.j:first-child .j-range { --pulse: var(--work); }
+.j:first-child .j-years .j-end { color: var(--work); }
