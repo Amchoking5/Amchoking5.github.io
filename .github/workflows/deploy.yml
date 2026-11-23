@@ -43,7 +43,7 @@ jobs:
       - name: Prepare site
         run: |
           mkdir _site
-          cp -r index.html algorithm.html problem.html assets data _site/
+          cp -r *.html assets data _site/
           touch _site/.nojekyll
 
       - uses: actions/upload-pages-artifact@v3

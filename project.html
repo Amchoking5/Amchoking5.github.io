@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Project · 유교준</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="site">
+    <div class="wrap">
+      <a class="logo" href="./">유교준</a>
+      <nav><a class="on" href="./#projects">Projects</a><a href="algorithm.html">Algorithm</a><a href="./#contact">Contact</a></nav>
+    </div>
+  </header>
+
+  <main class="wrap" id="post"><p class="empty">불러오는 중…</p></main>
+  <div class="lightbox" id="lightbox" hidden><div><img id="lb-img" alt=""><p id="lb-cap"></p></div></div>
+
+  <footer><div class="wrap">© 유교준 · 회사 프로젝트는 보안상 코드 대신 데모 결과와 아키텍처 위주로 정리했습니다.</div></footer>
+
+  <script src="assets/common.js"></script>
+  <script src="assets/projects.js"></script>
+  <script>
+    const el = document.getElementById("post");
+    const id = new URLSearchParams(location.search).get("id");
+    const idx = PROJECTS.findIndex(p => p.id === id);
+    const p = PROJECTS[idx];
+
+    if (!p) {
+      el.innerHTML = `<p class="empty">프로젝트를 찾을 수 없습니다. <a href="./#projects">목록으로</a></p>`;
+    } else {
+      const group = PROJECT_GROUPS.find(g => g.id === p.group);
+      document.title = `${p.title} · 유교준`;
+      const prev = PROJECTS[idx - 1], next = PROJECTS[idx + 1];
+
+      el.innerHTML = `
+        <a class="back" href="./#projects">← 프로젝트 목록</a>
+        <div class="proj-head">
+          <p class="proj-sub">${esc(group.title)}</p>
+          <h1>${p.emoji} ${esc(p.title)}</h1>
+          <p class="sub">${esc(p.subtitle)}</p>
+          <p class="period">${esc(p.period)} · ${esc(p.team)}</p>
+          <div class="proj-links">${p.links.map(([t, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(t)} ↗</a>`).join("")}</div>
+        </div>
+
+        <h2>개요</h2>
+        <p>${esc(p.summary)}</p>
+
+        <h2>핵심 역할</h2>
+        <ul class="roles">${p.roles.map(r => `<li>${esc(r)}</li>`).join("")}</ul>
+
+        <h2>사용 기술</h2>
+        <div class="stack-table">${Object.entries(p.stack).map(([k, v]) =>
+          `<span>${esc(k)}</span><div class="stack">${v.map(t => `<span>${esc(t)}</span>`).join("")}</div>`).join("")}</div>
+
+        ${p.features.length ? `<h2>핵심 기능</h2>` + p.features.map(f => `
+          <div class="feature"><h3>${esc(f.title)}</h3>
+          <ul>${f.items.map(i => `<li>${esc(i)}</li>`).join("")}</ul></div>`).join("") : ""}
+
+        ${p.gallery.length ? `<h2>결과물</h2><div class="gallery">${p.gallery.map(([cap, src, type]) =>
+          type === "video"
+            ? `<figure style="cursor:default"><video src="${src}" controls muted loop playsinline preload="metadata"></video><figcaption>${esc(cap)}</figcaption></figure>`
+            : `<figure data-src="${src}" data-cap="${esc(cap)}"><img src="${src}" alt="${esc(cap)}" loading="lazy"><figcaption>${esc(cap)}</figcaption></figure>`
+        ).join("")}</div>` : ""}
+
+        ${p.structure.length ? `<h2>구조</h2>` + p.structure.map(([cap, src]) =>
+          `<figure class="figure-wide" data-src="${src}" data-cap="${esc(cap)}"><img src="${src}" alt="${esc(cap)}" loading="lazy"><figcaption>${esc(cap)}</figcaption></figure>`).join("") : ""}
+
+        <nav class="proj-nav">
+          <span>${prev ? `<a href="project.html?id=${prev.id}">← ${esc(prev.title)}</a>` : ""}</span>
+          <span>${next ? `<a href="project.html?id=${next.id}">${esc(next.title)} →</a>` : ""}</span>
+        </nav>`;
+
+      const lb = document.getElementById("lightbox");
+      el.addEventListener("click", e => {
+        const fig = e.target.closest("figure[data-src]");
+        if (!fig) return;
+        document.getElementById("lb-img").src = fig.dataset.src;
+        document.getElementById("lb-cap").textContent = fig.dataset.cap;
+        lb.hidden = false;
+      });
+      lb.addEventListener("click", () => { lb.hidden = true; });
+      document.addEventListener("keydown", e => { if (e.key === "Escape") lb.hidden = true; });
+    }
+  </script>
+</body>
+</html>
