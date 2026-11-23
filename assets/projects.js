@@ -90,7 +90,7 @@ const PROJECTS = [
     id: "annohub", group: "naver", emoji: "📊",
     title: "Annohub", subtitle: "QA 데이터 수집 웹 페이지",
     period: "2026.02 – 2026.03", team: "1인 + 멘토",
-    summary: "경쟁사 영상 생성 모델과 비교해 성능을 파악하기 위한 벤치마크 QA 페이지입니다. JavaScript와 Node.js로 프론트엔드와 백엔드를 구성했고, PairWise · PointWise 방식으로 QA 점수를 측정해 저장합니다. QA 작업자 근태 관리 시스템도 함께 만들었습니다.",
+    summary: "경쟁사 영상 생성 모델과 비교해 성능을 파악하기 위한 벤치마크 QA 페이지입니다. JavaScript와 Node.js로 프론트엔드와 백엔드를 구성했고, PairWise · PointWise 방식으로 측정한 QA 점수와 회원 · 근태 정보를 MongoDB에 저장합니다. QA 작업자 근태 관리 시스템도 함께 만들었습니다.",
     roles: ["QA 평가 데이터 수집 파이프라인 구축 및 웹 페이지 제작", "QA 작업자 근태 관리 시스템 제작"],
     stack: { "Back-end": ["JavaScript", "Node.js", "MongoDB", "공공데이터포털 API"], "Front-end": ["JavaScript", "TypeScript", "React"] },
     features: [
@@ -183,7 +183,7 @@ const PROJECTS = [
   {
     id: "maeum", group: "solid", emoji: "🖼️",
     title: "마음돌봄 프로젝트", subtitle: "AI 대화 기반 아동 심리 케어",
-    period: "2024.02 – 2025.05", team: "3명",
+    period: "2025.02 – 2025.05", team: "3명",
     summary: "AI와 대화하며 위로를 받는 심리 케어 프로젝트입니다. '주변에 속마음을 표현하지 않는 아동의 감정을 AI로 이끌어내 보자'는 아이디어에서 시작했습니다. 성격 · 심리 테스트로 나만의 캐릭터를 만들고, AI와 하루를 돌아본 대화는 이미지 생성 AI로 그림일기가 됩니다. KAIST 어린이집을 방문해 아이들이 좋아하는 그림체를 확인하고 MVP 테스트를 진행했습니다.",
     roles: ["멀티턴 LLM", "Stable Diffusion 3 API 서버 연결", "캐릭터 일관성 향상 (프롬프트 딕셔너리, 사용자별 LoRA 생성 및 관리)"],
     stack: { "Back-end": ["Python", "FastAPI", "LangChain", "Stable Diffusion 3", "LoRA"], "Front-end": ["Python", "Gradio", "JavaScript", "TypeScript", "React"] },
