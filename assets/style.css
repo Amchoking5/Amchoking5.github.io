@@ -262,3 +262,15 @@ h3.group small { font-weight: 400; font-size: .82rem; margin-left: 8px; }
   .jt-tick span { font-size: .7rem; }
   .jt-card { padding: 10px 12px 12px; }
 }
+
+/* ---------- journey: 빈 기간 물결 생략 ---------- */
+.jt-gap { position: absolute; left: 0; z-index: 3; pointer-events: none; }
+.jt-gap svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.jt-gap .fill { fill: var(--bg); opacity: .78; }
+.jt-gap .wave { fill: none; stroke: var(--muted); stroke-width: 1.3; opacity: .55; }
+.jt-gap span { position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: calc(var(--ax) - 4px);
+  text-align: right; font-size: .7rem; color: var(--muted); line-height: 1.1; letter-spacing: -.02em; white-space: nowrap; }
+.jt-gap span b { font-weight: 500; margin: 0 1px; }
+.jt.reveal .jt-gap { opacity: 0; }
+.jt.reveal.in .jt-gap { opacity: 1; transition: opacity .4s ease .5s; }
+@media (max-width: 560px) { .jt-gap span { font-size: .62rem; } }

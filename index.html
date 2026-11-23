@@ -82,14 +82,29 @@
         .sort((a, b) => b.e - a.e);                                   // 종료일 최신순
       const top = Math.ceil(Math.max(...items.map(x => x.e)));
       const bottom = Math.floor(Math.min(...items.map(x => x.s)));
+
+      // 빈 기간 찾기: 시작/종료 이벤트 사이가 GAP_MIN년보다 길면, 양끝 PAD년만 남기고 압축
+      const GAP_MIN = 1.5, PAD = 0.5;
+      const events = [...new Set([top, bottom, ...items.flatMap(x => [x.e, x.s])])].sort((a, b) => b - a);
+      const gaps = [];
+      for (let k = 0; k < events.length - 1; k++) {
+        const hi = events[k], lo = events[k + 1];
+        if (hi - lo > GAP_MIN) gaps.push({ hi: hi - PAD, lo: lo + PAD });
+      }
+      const inGap = t => gaps.some(g => t < g.hi && t > g.lo);
       const years = [];
-      for (let y = top; y >= bottom; y--) years.push(y);
+      for (let y = top; y >= bottom; y--) if (!inGap(y)) years.push(y);
+      const skipped = g => {               // 압축된 구간에 포함된 연도 표기 (예: 2019–23)
+        const a = Math.ceil(g.lo), b = Math.floor(g.hi);
+        return a > b ? "" : a === b ? `${a}` : `${a}–${String(b).slice(2)}`;
+      };
 
       root.innerHTML = `
         <svg class="jt-links" aria-hidden="true"></svg>
         <div class="jt-axis" aria-hidden="true">${years.map(y => `<div class="jt-tick" data-y="${y}"><span>${y}</span></div>`).join("")}</div>
         <div class="jt-lanes" aria-hidden="true">${items.map(x =>
           `<div class="jt-bar ${x.type}" data-k="${x.i}" style="--lane:${LANES.indexOf(x.type)}"></div>`).join("")}</div>
+        ${gaps.map(g => `<div class="jt-gap" aria-hidden="true"><svg preserveAspectRatio="none"></svg><span>⋯<b>${skipped(g)}</b>⋯</span></div>`).join("")}
         <ol class="jt-cards">${items.map(x => `
           <li class="jt-card ${x.type}" data-k="${x.i}">
             <span class="jt-when">${x.start} – ${x.end}</span>
@@ -103,33 +118,88 @@
       const bars = [...root.querySelectorAll(".jt-bar")];
       const cards = [...root.querySelectorAll(".jt-card")];
       const cardsCol = root.querySelector(".jt-cards");
+      const gapEls = [...root.querySelectorAll(".jt-gap")];
       const GAP = 14, ANCHOR = 22;   // 카드 간격, 말풍선 꼬리 위치(카드 상단에서)
+
+      // 시간 → y 좌표 (압축 구간은 고정 높이 COMP로)
+      function makeScale(PX, comps) {
+        const knots = [[top, 10]];
+        let y = 10, t = top;
+        gaps.forEach((g, n) => {
+          y += (t - g.hi) * PX; knots.push([g.hi, y]);
+          y += comps[n]; knots.push([g.lo, y]);
+          t = g.lo;
+        });
+        y += (t - bottom) * PX; knots.push([bottom, y]);
+        return v => {
+          for (let k = 0; k < knots.length - 1; k++) {
+            const [t1, y1] = knots[k], [t2, y2] = knots[k + 1];
+            if (v <= t1 && v >= t2) return t1 === t2 ? y1 : y1 + (t1 - v) / (t1 - t2) * (y2 - y1);
+          }
+          return v > top ? 10 : knots[knots.length - 1][1];
+        };
+      }
+
+      function wavePath(w, h) {   // 위·아래 물결 두 줄 + 그 사이를 배경색으로 덮어 막대를 끊어 보이게
+        const amp = 3, period = 12, pts = y0 => {
+          const p = [];
+          for (let x = 0; x <= w; x += 2) p.push([x, +(y0 + amp * Math.sin(x / period * 2 * Math.PI)).toFixed(2)]);
+          return p;
+        };
+        const t = pts(5), bt = pts(h - 5);
+        const line = p => "M" + p.map(q => q.join(",")).join(" L");
+        const fill = line(t) + " L" + bt.slice().reverse().map(q => q.join(",")).join(" L") + " Z";
+        return `<path class="fill" d="${fill}"/><path class="wave" d="${line(t)}"/><path class="wave" d="${line(bt)}"/>`;
+      }
 
       function layout() {
         const narrow = root.clientWidth < 560;
-        const PX = narrow ? 64 : 84;                                // 1년 높이
-        const yOf = t => (top - t) * PX + 10;
+        const PX = narrow ? 64 : 84, COMP = narrow ? 40 : 48;        // 1년 높이, 압축 구간 최소 높이
+        const comps = gaps.map(() => COMP);
+        let yOf, tops;
+        // 말풍선이 앞 카드에 밀려 종료일과 어긋나면, 그 위쪽 압축 구간을 필요한 만큼 늘린다
+        for (let pass = 0; pass < 4; pass++) {
+          yOf = makeScale(PX, comps);
+          tops = []; let prevBottom = -Infinity, grew = false;
+          items.forEach((x, n) => {
+            const want = yOf(x.e) - ANCHOR;
+            const top_ = Math.max(want, prevBottom + GAP, 0);
+            tops.push(top_);
+            prevBottom = top_ + cards[n].offsetHeight;
+            const push = top_ - want;
+            if (push > 0.5) {
+              let gi = -1;   // 이 종료일 바로 위에 있는 압축 구간
+              gaps.forEach((g, k) => { if (g.lo >= x.e && (gi < 0 || g.lo < gaps[gi].lo)) gi = k; });
+              if (gi >= 0 && !grew) { comps[gi] += push; grew = true; }
+            }
+          });
+          if (!grew) break;
+        }
         root.querySelectorAll(".jt-tick").forEach(t => { t.style.top = yOf(+t.dataset.y) + "px"; });
         items.forEach((x, n) => {
           bars[n].style.top = yOf(x.e) + "px";
           bars[n].style.height = Math.max(yOf(x.s) - yOf(x.e), 6) + "px";
         });
-        // 말풍선: 종료일 높이에 맞추되, 앞 카드와 겹치면 아래로 민다
-        let prevBottom = -Infinity, paths = "";
-        const rootBox = root.getBoundingClientRect();
-        const lanesRight = lanes.getBoundingClientRect().right - rootBox.left;
+        const bandW = lanes.offsetLeft + lanes.offsetWidth + 6;
+        gaps.forEach((g, n) => {
+          const el = gapEls[n], y1 = yOf(g.hi), y2 = yOf(g.lo);
+          el.style.top = y1 + "px"; el.style.height = (y2 - y1) + "px"; el.style.width = bandW + "px";
+          const sv = el.querySelector("svg");
+          sv.setAttribute("viewBox", `0 0 ${bandW} ${y2 - y1}`);
+          sv.innerHTML = wavePath(bandW, y2 - y1);
+        });
+        let paths = "", lastBottom = 0;
+        const lanesRight = lanes.offsetLeft + lanes.offsetWidth;
         items.forEach((x, n) => {
-          const want = yOf(x.e) - ANCHOR;
-          const cardTop = Math.max(want, prevBottom + GAP, 0);
+          const cardTop = tops[n];
           cards[n].style.top = cardTop + "px";
-          prevBottom = cardTop + cards[n].offsetHeight;
-          const bb = bars[n].getBoundingClientRect();
-          const bx = bb.left + bb.width / 2 - rootBox.left, by = yOf(x.e);
-          const cx = cardsCol.offsetLeft - 7, cy = cardTop + ANCHOR;   // 말풍선 꼬리 끝 (transform 영향 없는 offset 기준)
+          lastBottom = cardTop + cards[n].offsetHeight;
+          const bx = lanes.offsetLeft + bars[n].offsetLeft + bars[n].offsetWidth / 2, by = yOf(x.e);
+          const cx = cardsCol.offsetLeft - 7, cy = cardTop + ANCHOR;   // 말풍선 꼬리 끝
           const mx = lanesRight + (cx - lanesRight) * 0.5;
           paths += `<path class="${x.type}" data-k="${x.i}" d="M${bx},${by} H${lanesRight + 4} C${mx},${by} ${mx},${cy} ${cx},${cy}"/>`;
         });
-        const h = Math.max(yOf(bottom) + 10, prevBottom + 4);
+        const h = Math.max(yOf(bottom) + 10, lastBottom + 4);
         root.style.height = h + "px";
         svg.setAttribute("viewBox", `0 0 ${root.clientWidth} ${h}`);
         svg.innerHTML = paths;
@@ -144,7 +214,7 @@
       });
 
       layout();
-      if ("ResizeObserver" in window) new ResizeObserver(() => layout()).observe(root.querySelector(".jt-cards"));
+      if ("ResizeObserver" in window) new ResizeObserver(() => layout()).observe(cardsCol);
       addEventListener("resize", layout);
       document.fonts && document.fonts.ready.then(layout);
 
