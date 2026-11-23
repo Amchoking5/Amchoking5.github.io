@@ -3,35 +3,154 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Demi's Developer Portfolio</title>
+  <title>유교준 | Developer Portfolio</title>
+  <meta name="description" content="밤낮으로 몰입해 사용자의 문제를 해결하는 개발자 유교준의 포트폴리오">
   <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
   <header class="site">
     <div class="wrap">
-      <a class="logo" href="./">Demi</a>
-      <nav><a class="on" href="./">Home</a><a href="algorithm.html">Algorithm</a></nav>
+      <a class="logo" href="./">유교준</a>
+      <nav>
+        <a href="#projects">Projects</a>
+        <a href="algorithm.html">Algorithm</a>
+        <a href="#contact">Contact</a>
+      </nav>
     </div>
   </header>
 
   <main class="wrap">
-    <h1>Hello, I'm Demi!</h1>
-    <p class="sub">Developer Portfolio &amp; Engineering Notes</p>
+    <section class="hero">
+      <p class="eyebrow">Yoo Gyojun · Amchoking5</p>
+      <h1>밤낮으로 몰입해<br>사용자의 문제를 해결하는 개발자</h1>
+      <p class="lead">
+        중학교 때 프로그래밍을 시작해 개발의 재미를 알게 되었고, 주변 사람들을 위한 프로그램을 만들어 왔습니다.
+        인턴과 프리랜서로 FastAPI와 AI를 활용한 서비스의 MVP 핵심 알고리즘을 개발했습니다.
+        사용자를 행복하게 만드는 개발자를 목표로 끊임없이 노력하고 있습니다.
+      </p>
+      <div class="chips">
+        <span>Python</span><span>FastAPI</span><span>LangChain · RAG</span><span>React</span>
+        <span>Node.js</span><span>영상 생성 AI</span><span>C / C++</span>
+      </div>
+    </section>
 
-    <h2>About Me</h2>
-    <p>개발자로 성장하기 위해 공부하고 기록합니다.</p>
+    <h2>Experience</h2>
+    <ul class="timeline">
+      <li>
+        <span class="when">2026.02 – 2026.08</span>
+        <div><b>네이버클라우드</b> · Video Generation 인턴
+          <p>영상 생성 모델 벤치마크 QA, 자기개선 학습 파이프라인, 광고 영상 생성 프로젝트</p></div>
+      </li>
+      <li>
+        <span class="when">2024.06 – 2025.05</span>
+        <div><b>솔리드이엔지</b> · AI 부서 인턴 / 프리랜서
+          <p>RAG 기반 챗봇과 생성형 AI 서비스의 MVP 핵심 알고리즘 개발</p></div>
+      </li>
+    </ul>
 
-    <h2>Algorithm</h2>
+    <h2>Education</h2>
+    <ul class="timeline">
+      <li><span class="when">2018.03 – 2026.02</span>
+        <div><b>한국과학기술원 (KAIST)</b> · 졸업예정
+          <p>로봇제작 동아리 MR, 인공지능 동아리 Include</p></div></li>
+      <li><span class="when">2017.03 – 2018.02</span>
+        <div><b>경산과학고등학교</b>
+          <p>정보동아리 GSALGO 부장</p></div></li>
+    </ul>
+
+    <h2 id="projects">Projects</h2>
+    <h3 class="group">네이버클라우드 인턴</h3>
+    <div class="cards">
+      <article class="card">
+        <h4>🎨 ADGen · 광고 영상 생성</h4>
+        <p class="period">2026.07 – 2026.08 · 1인 + 멘토</p>
+        <p>광고 URL로 핵심 정보를 수집해 광고 전략과 목표 시간에 맞는 스토리보드를 구성하고, 레퍼런스 분석으로 시작 이미지를 만든 뒤 I2V로 광고 영상을 생성합니다.</p>
+        <p class="role"><b>역할</b> 영상 생성 일관성 유지, AI 스토리보드 및 광고 생성 파이프라인 설계</p>
+        <div class="stack"><span>FastAPI</span><span>ChatGPT</span><span>LangChain</span><span>LightX2V</span><span>React</span><span>Vite</span></div>
+        <a href="https://github.com/Amchoking5/Team_Project/tree/main/Intern%20Project/ADGen" target="_blank" rel="noopener">상세 설명 ↗</a>
+      </article>
+      <article class="card">
+        <h4>⚙️ Necro Flow · 스스로 개선하는 AI</h4>
+        <p class="period">2026.03 – 2026.06 · 1인 + 멘토</p>
+        <p>체크포인트별 영상 생성 결과를 Unified Reward Model로 비교해 약점을 분석하고, 이를 보완할 데이터셋을 자동 수집해 재학습합니다. 진행 로그, AI 분석 리포트, 데이터 수집 관계도를 제공합니다.</p>
+        <p class="role"><b>역할</b> 전체 파이프라인 설계, 기존 코드 기반 작업을 FastAPI 서버 API 통신으로 결합</p>
+        <div class="stack"><span>FastAPI</span><span>Chroma DB</span><span>MongoDB</span><span>LangChain</span><span>LightX2V</span><span>OCR</span><span>React</span></div>
+        <a href="https://github.com/Amchoking5/Team_Project/blob/main/Intern%20Project/NecroFlow/README.md" target="_blank" rel="noopener">상세 설명 ↗</a>
+      </article>
+      <article class="card">
+        <h4>📊 Annohub · QA 데이터 수집</h4>
+        <p class="period">2026.02 – 2026.03 · 1인 + 멘토</p>
+        <p>경쟁사 영상 생성 모델과 성능을 비교하기 위한 벤치마크 QA 페이지입니다. PairWise · PointWise 방식으로 점수를 측정하고 결과를 저장합니다.</p>
+        <p class="role"><b>역할</b> QA 평가 데이터 수집 파이프라인 구축 및 웹 페이지 제작</p>
+        <div class="stack"><span>Node.js</span><span>MongoDB</span><span>React</span><span>TypeScript</span></div>
+        <a href="https://github.com/Amchoking5/Team_Project/tree/main/Intern%20Project/Annohub" target="_blank" rel="noopener">상세 설명 ↗</a>
+      </article>
+    </div>
+
+    <h3 class="group">솔리드이엔지 인턴</h3>
+    <div class="cards">
+      <article class="card">
+        <h4>💬 세종시 챗봇 AI 충녕</h4>
+        <p class="period">2024.06 – 2024.10 · 3명</p>
+        <p>세종시 데이터를 학습해 답변하는 챗봇입니다. LangChain과 RAG로 질문과 관련된 문장을 찾고 LLM으로 답변을 생성합니다.</p>
+        <p class="role"><b>역할</b> 답변 정확도 향상 및 할루시네이션 억제 (전처리 구조 개선, 코사인 유사도 Top-k, Threshold)</p>
+        <div class="stack"><span>FastAPI</span><span>Pinecone</span><span>LangChain</span><span>React</span></div>
+        <a href="https://github.com/Amchoking5/Team_Project/tree/main/Intern%20Project/%EC%84%B8%EC%A2%85%EC%8B%9C%20%EC%B1%97%EB%B4%87%20AI%20%EC%B6%A9%EB%85%95" target="_blank" rel="noopener">상세 설명 ↗</a>
+        <a href="https://aichat.sejong.go.kr/" target="_blank" rel="noopener">서비스 ↗</a>
+      </article>
+      <article class="card">
+        <h4>🏭 KAF 방사 공장 매뉴얼 챗봇</h4>
+        <p class="period">2024.11 – 2025.01 · 3명</p>
+        <p>공장 매뉴얼을 학습해 답변하고 매뉴얼 작성을 돕는 시스템입니다. 다국어, 음성 입출력, 답변 내 이미지 출력, 관리자 · 피드백 페이지를 구현했습니다.</p>
+        <p class="role"><b>역할</b> 관리자 및 피드백 페이지 개발 (BE/FE), 참고자료 · 이미지 출력을 위한 DB 구조 변경</p>
+        <div class="stack"><span>FastAPI</span><span>Pinecone</span><span>LangChain</span><span>Whisper</span><span>Docker</span><span>React</span></div>
+        <a href="https://github.com/Amchoking5/Team_Project/tree/main/Intern%20Project/KAF%20%EB%B0%A9%EC%82%AC%20%EA%B3%B5%EC%9E%A5%20%EB%A7%A4%EB%89%B4%EC%96%BC%20%EC%B1%97%EB%B4%87" target="_blank" rel="noopener">상세 설명 ↗</a>
+      </article>
+      <article class="card">
+        <h4>🖼️ 마음돌봄 프로젝트</h4>
+        <p class="period">2024.02 – 2025.05 · 3명</p>
+        <p>속마음을 잘 표현하지 않는 아동이 AI와 대화하며 하루를 돌아보는 심리 케어 서비스입니다. 성격 · 심리 테스트로 나만의 캐릭터를 만들고, 대화 내용은 이미지 생성 AI로 그림일기가 됩니다.</p>
+        <p class="role"><b>역할</b> 멀티턴 LLM, Stable Diffusion 3 API 서버 연결, 캐릭터 일관성 향상 (프롬프트 딕셔너리, 사용자별 LoRA)</p>
+        <div class="stack"><span>FastAPI</span><span>LangChain</span><span>Stable Diffusion</span><span>Gradio</span><span>React</span></div>
+        <a href="https://github.com/Amchoking5/Team_Project/tree/main/Intern%20Project/%EB%A7%88%EC%9D%8C%EB%8F%8C%EB%B4%84%20%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8" target="_blank" rel="noopener">상세 설명 ↗</a>
+      </article>
+    </div>
+
+    <h3 class="group">팀 프로젝트</h3>
+    <div class="cards">
+      <article class="card">
+        <h4>🍎 Fruit Box RL</h4>
+        <p class="period">2024.05 – 2024.06 · 심층강화학습과 게임AI 수업</p>
+        <p>사과 게임에서 고득점을 얻는 AI를 개발했습니다. 파이썬으로 게임을 옮긴 뒤 RLlib, CNN, Monte Carlo, MCTS 등 다양한 방법을 시도했습니다.</p>
+        <p class="role"><b>역할</b> Fruit Box 파이썬 클론 코딩, Monte Carlo Search</p>
+        <div class="stack"><span>Python</span><span>RLlib</span><span>NumPy</span></div>
+        <a href="https://github.com/Amchoking5/Team_Project/tree/main/Fruit%20Box" target="_blank" rel="noopener">상세 설명 ↗</a>
+      </article>
+      <article class="card">
+        <h4>🤖 개미 로봇</h4>
+        <p class="period">2018.03 – 2018.12 · KAIST 로봇제작 동아리 MR</p>
+        <p>무거운 물체를 만나면 서로 협력해 옮기는 물류 이동 로봇입니다.</p>
+        <p class="role"><b>역할</b> 이동 경로 프로토타입 제작, 아두이노 회로 제작 및 코딩</p>
+        <div class="stack"><span>C</span><span>C++</span><span>Arduino</span></div>
+        <a href="https://mr.kaist.ac.kr/projects/74" target="_blank" rel="noopener">참고 자료 ↗</a>
+      </article>
+    </div>
+
+    <h2>Problem Solving</h2>
+    <p>백준, 프로그래머스, LeetCode에서 C, C++, Python으로 문제를 풀며 문제 해결 능력을 길렀습니다. 백준 플래티넘 등급을 달성했습니다.</p>
     <div class="stats" id="stats"></div>
-    <h2 style="font-size:1.05rem;margin-top:28px">최근 푼 문제</h2>
+    <h3 class="group">최근 푼 문제</h3>
     <ul class="list" id="recent"><li class="empty">불러오는 중…</li></ul>
     <p><a href="algorithm.html">전체 문제 보기 →</a></p>
 
-    <h2>Projects</h2>
-    <p>진행한 프로젝트와 개발 경험을 기록합니다.</p>
+    <h2 id="contact">Contact</h2>
+    <ul class="contact">
+      <li><span>Email</span><a href="mailto:amchoking@naver.com">amchoking@naver.com</a></li>
+      <li><span>GitHub</span><a href="https://github.com/Amchoking5" target="_blank" rel="noopener">github.com/Amchoking5</a></li>
+    </ul>
   </main>
 
-  <footer><div class="wrap">문제 풀이는 <a href="https://github.com/Amchoking5/Problem_Solving">Problem_Solving</a> 저장소에서 자동으로 동기화됩니다.</div></footer>
+  <footer><div class="wrap">© 유교준 · 문제 풀이는 <a href="https://github.com/Amchoking5/Problem_Solving">Problem_Solving</a> 저장소에서 자동으로 동기화됩니다.</div></footer>
 
   <script src="assets/common.js"></script>
   <script>
@@ -41,7 +160,7 @@
         ["전체", ps.length], ["백준", by("baekjoon")],
         ["프로그래머스", by("programmers")], ["LeetCode", by("leetcode")],
       ].map(([l, n]) => `<div class="stat"><b>${n}</b><span>${l}</span></div>`).join("");
-      document.getElementById("recent").innerHTML = ps.slice(0, 8).map(rowHTML).join("");
+      document.getElementById("recent").innerHTML = ps.slice(0, 6).map(rowHTML).join("");
     }).catch(e => {
       document.getElementById("recent").innerHTML = `<li class="empty">${esc(e.message)}</li>`;
     });

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Problem · Demi</title>
+  <title>Problem · 유교준</title>
   <link rel="stylesheet" href="assets/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" media="(prefers-color-scheme: light)">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" media="(prefers-color-scheme: dark)">
@@ -12,8 +12,8 @@
 <body>
   <header class="site">
     <div class="wrap">
-      <a class="logo" href="./">Demi</a>
-      <nav><a href="./">Home</a><a class="on" href="algorithm.html">Algorithm</a></nav>
+      <a class="logo" href="./">유교준</a>
+      <nav><a href="./#projects">Projects</a><a class="on" href="algorithm.html">Algorithm</a><a href="./#contact">Contact</a></nav>
     </div>
   </header>
 
@@ -32,7 +32,7 @@
       const res = await fetch(`data/problems/${id}.json`, { cache: "no-cache" });
       if (!res.ok) throw new Error("문제를 찾을 수 없습니다.");
       const p = await res.json();
-      document.title = `${p.pid ? p.pid + ". " : ""}${p.title} · Demi`;
+      document.title = `${p.pid ? p.pid + ". " : ""}${p.title} · 유교준`;
 
       const info = [
         p.date && `제출 ${fmtDate(p.date)}`,
