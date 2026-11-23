@@ -34,29 +34,60 @@
       </div>
     </section>
 
-    <h2>Experience</h2>
-    <ul class="timeline">
-      <li>
-        <span class="when">2026.02 – 2026.08</span>
-        <div><b>네이버클라우드</b> · Video Generation 인턴
-          <p>영상 생성 모델 벤치마크 QA, 자기개선 학습 파이프라인, 광고 영상 생성 프로젝트</p></div>
+    <h2 id="journey">Journey</h2>
+    <div class="j-legend"><span class="work">경력</span><span class="edu">학력</span></div>
+    <ol class="journey" id="journey-list">
+      <li class="j work">
+        <div class="j-year">2026</div>
+        <div class="j-dot" aria-hidden="true"></div>
+        <div class="j-card">
+          <span class="j-when">2026.02 – 2026.08</span>
+          <h3>네이버클라우드 <small>Video Generation 인턴</small></h3>
+          <p>영상 생성 모델 벤치마크 QA, 자기개선 학습 파이프라인, 광고 영상 생성 프로젝트</p>
+          <div class="j-links">
+            <a href="project.html?id=adgen">🎨 ADGen</a>
+            <a href="project.html?id=necroflow">⚙️ Necro Flow</a>
+            <a href="project.html?id=annohub">📊 Annohub</a>
+          </div>
+        </div>
       </li>
-      <li>
-        <span class="when">2024.06 – 2025.05</span>
-        <div><b>솔리드이엔지</b> · AI 부서 인턴 / 프리랜서
-          <p>RAG 기반 챗봇과 생성형 AI 서비스의 MVP 핵심 알고리즘 개발</p></div>
+      <li class="j work">
+        <div class="j-year">2024</div>
+        <div class="j-dot" aria-hidden="true"></div>
+        <div class="j-card">
+          <span class="j-when">2024.06 – 2025.05</span>
+          <h3>솔리드이엔지 <small>AI 부서 인턴 · 프리랜서</small></h3>
+          <p>RAG 기반 챗봇과 생성형 AI 서비스의 MVP 핵심 알고리즘 개발</p>
+          <div class="j-links">
+            <a href="project.html?id=sejong">💬 세종시 챗봇 AI 충녕</a>
+            <a href="project.html?id=kaf">🏭 KAF 매뉴얼 챗봇</a>
+            <a href="project.html?id=maeum">🖼️ 마음돌봄</a>
+          </div>
+        </div>
       </li>
-    </ul>
-
-    <h2>Education</h2>
-    <ul class="timeline">
-      <li><span class="when">2018.03 – 2026.02</span>
-        <div><b>한국과학기술원 (KAIST)</b> · 졸업
-          <p>로봇제작 동아리 MR, 인공지능 동아리 Include</p></div></li>
-      <li><span class="when">2017.03 – 2018.02</span>
-        <div><b>경산과학고등학교</b>
-          <p>정보동아리 GSALGO 부장</p></div></li>
-    </ul>
+      <li class="j edu">
+        <div class="j-year">2018</div>
+        <div class="j-dot" aria-hidden="true"></div>
+        <div class="j-card">
+          <span class="j-when">2018.03 – 2026.02</span>
+          <h3>한국과학기술원 (KAIST) <small>졸업</small></h3>
+          <p>로봇제작 동아리 MR, 인공지능 동아리 Include</p>
+          <div class="j-links">
+            <a href="project.html?id=fruitbox">🍎 Fruit Box RL</a>
+            <a href="project.html?id=antrobot">🤖 개미 로봇</a>
+          </div>
+        </div>
+      </li>
+      <li class="j edu">
+        <div class="j-year">2017</div>
+        <div class="j-dot" aria-hidden="true"></div>
+        <div class="j-card">
+          <span class="j-when">2017.03 – 2018.02</span>
+          <h3>경산과학고등학교</h3>
+          <p>정보동아리 GSALGO 부장</p>
+        </div>
+      </li>
+    </ol>
 
     <h2 id="projects">Projects</h2>
     <div id="project-groups"></div>
@@ -79,6 +110,19 @@
   <script src="assets/common.js"></script>
   <script src="assets/projects.js"></script>
   <script>
+    (function journeyReveal() {
+      const list = document.getElementById("journey-list");
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) return;
+      list.classList.add("reveal");
+      const io = new IntersectionObserver(entries => entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        e.target.classList.add("in");
+        io.unobserve(e.target);
+      }), { threshold: 0.25, rootMargin: "0px 0px -40px 0px" });
+      io.observe(list);
+      list.querySelectorAll(".j").forEach(li => io.observe(li));
+    })();
+
     (function projectTabs() {
       const root = document.getElementById("project-groups");
       const groups = PROJECT_GROUPS.map(g => ({ ...g, items: PROJECTS.filter(p => p.group === g.id) }));

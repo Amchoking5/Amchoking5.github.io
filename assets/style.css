@@ -185,3 +185,67 @@ h3.group small { font-weight: 400; font-size: .82rem; margin-left: 8px; }
 .pempty span { font-size: 2.4rem; }
 .pempty p { margin: 8px 0 0; }
 @media (prefers-reduced-motion: reduce) { .ptab-ink.ready { transition: none; } }
+
+/* ---------- journey timeline ---------- */
+:root { --work: var(--accent); --edu: #8250df; }
+@media (prefers-color-scheme: dark) { :root { --edu: #a371f7; } }
+.j-legend { display: flex; gap: 16px; font-size: .82rem; color: var(--muted); margin: -4px 0 18px; }
+.j-legend span::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 50%;
+  margin-right: 6px; vertical-align: 1px; background: var(--work); }
+.j-legend .edu::before { background: var(--edu); }
+.journey { list-style: none; margin: 0; padding: 0; position: relative; --yw: 56px; --dw: 28px; }
+.journey::before { content: ""; position: absolute; top: 8px; bottom: 8px;
+  left: calc(var(--yw) + var(--dw) / 2 - 1px); width: 2px; border-radius: 2px;
+  background: linear-gradient(to bottom, var(--work) 0%, var(--work) 45%, var(--edu) 60%, var(--edu) 100%);
+  opacity: .45; transform-origin: top; }
+.j { display: grid; grid-template-columns: var(--yw) var(--dw) 1fr; align-items: start; padding-bottom: 22px; }
+.j:last-child { padding-bottom: 0; }
+.j-year { font-weight: 700; font-size: 1.05rem; color: var(--muted); text-align: right; padding-right: 4px;
+  font-variant-numeric: tabular-nums; line-height: 1.4; padding-top: 14px; }
+.j-dot { position: relative; justify-self: center; width: 14px; height: 14px; margin-top: 19px; border-radius: 50%;
+  background: var(--bg); border: 3px solid var(--work); box-shadow: 0 0 0 4px var(--bg); z-index: 1;
+  transition: transform .25s; }
+.j.edu .j-dot { border-color: var(--edu); }
+.j:first-child .j-dot { background: var(--work); }
+.j:first-child .j-dot::after { content: ""; position: absolute; inset: -7px; border-radius: 50%;
+  border: 2px solid var(--work); opacity: 0; animation: j-pulse 2.4s ease-out infinite; }
+@keyframes j-pulse { 0% { transform: scale(.6); opacity: .7; } 100% { transform: scale(1.5); opacity: 0; } }
+.j-card { border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; background: var(--bg);
+  margin-left: 6px; transition: border-color .2s, box-shadow .2s, transform .2s; position: relative; }
+.j-card::before { content: ""; position: absolute; left: -7px; top: 20px; width: 12px; height: 12px;
+  background: inherit; border-left: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  transform: rotate(45deg); transition: border-color .2s; }
+.j:hover .j-card { border-color: var(--work); box-shadow: 0 6px 18px rgba(0,0,0,.06); }
+.j.edu:hover .j-card { border-color: var(--edu); }
+.j:hover .j-card::before { border-color: inherit; }
+.j:hover .j-dot { transform: scale(1.25); }
+.j-when { font-size: .82rem; color: var(--work); font-weight: 600; font-variant-numeric: tabular-nums; }
+.j.edu .j-when { color: var(--edu); }
+.j-card h3 { margin: 2px 0 4px; font-size: 1.08rem; }
+.j-card h3 small { font-weight: 400; color: var(--muted); font-size: .88rem; margin-left: 4px; }
+.j-card p { margin: 0; color: var(--muted); font-size: .92rem; }
+.j-links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.j-links a { font-size: .8rem; padding: 2px 10px; border-radius: 999px; border: 1px solid var(--line);
+  color: var(--fg); background: var(--card); transition: border-color .2s, color .2s; }
+.j-links a:hover { text-decoration: none; border-color: var(--work); color: var(--work); }
+.j.edu .j-links a:hover { border-color: var(--edu); color: var(--edu); }
+
+/* 스크롤 등장 (JS가 .reveal을 붙였을 때만) */
+.journey.reveal::before { transform: scaleY(0); transition: transform 1.2s cubic-bezier(.4,0,.2,1); }
+.journey.reveal.in::before { transform: scaleY(1); }
+.journey.reveal .j .j-card { opacity: 0; transform: translateX(24px); }
+.journey.reveal .j .j-dot { transform: scale(0); }
+.journey.reveal .j .j-year { opacity: 0; }
+.journey.reveal .j.in .j-card { opacity: 1; transform: none;
+  transition: opacity .5s ease .15s, transform .6s cubic-bezier(.2,.8,.2,1) .15s, border-color .2s, box-shadow .2s; }
+.journey.reveal .j.in .j-dot { transform: scale(1); transition: transform .4s cubic-bezier(.3,1.6,.5,1); }
+.journey.reveal .j.in .j-year { opacity: 1; transition: opacity .5s ease .1s; }
+.journey.reveal .j.in:hover .j-dot { transform: scale(1.25); }
+
+@media (max-width: 560px) {
+  .journey { --yw: 0px; --dw: 24px; }
+  .j { grid-template-columns: var(--dw) 1fr; }
+  .j-year { display: none; }
+  .j-card { margin-left: 8px; }
+}
+@media (prefers-reduced-motion: reduce) { .j:first-child .j-dot::after { animation: none; } }
