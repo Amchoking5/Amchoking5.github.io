@@ -36,58 +36,7 @@
 
     <h2 id="journey">Journey</h2>
     <div class="j-legend"><span class="work">경력</span><span class="edu">학력</span></div>
-    <ol class="journey" id="journey-list">
-      <li class="j work">
-        <div class="j-years"><span class="j-end">2026.08</span><span class="j-start">2026.02</span></div>
-        <div class="j-range" aria-hidden="true"></div>
-        <div class="j-card">
-          <span class="j-when">2026.02 – 2026.08</span>
-          <h3>네이버클라우드 <small>Video Generation 인턴</small></h3>
-          <p>영상 생성 모델 벤치마크 QA, 자기개선 학습 파이프라인, 광고 영상 생성 프로젝트</p>
-          <div class="j-links">
-            <a href="project.html?id=adgen">🎨 ADGen</a>
-            <a href="project.html?id=necroflow">⚙️ Necro Flow</a>
-            <a href="project.html?id=annohub">📊 Annohub</a>
-          </div>
-        </div>
-      </li>
-      <li class="j work">
-        <div class="j-years"><span class="j-end">2025.05</span><span class="j-start">2024.06</span></div>
-        <div class="j-range" aria-hidden="true"></div>
-        <div class="j-card">
-          <span class="j-when">2024.06 – 2025.05</span>
-          <h3>솔리드이엔지 <small>AI 부서 인턴 · 프리랜서</small></h3>
-          <p>RAG 기반 챗봇과 생성형 AI 서비스의 MVP 핵심 알고리즘 개발</p>
-          <div class="j-links">
-            <a href="project.html?id=sejong">💬 세종시 챗봇 AI 충녕</a>
-            <a href="project.html?id=kaf">🏭 KAF 매뉴얼 챗봇</a>
-            <a href="project.html?id=maeum">🖼️ 마음돌봄</a>
-          </div>
-        </div>
-      </li>
-      <li class="j edu">
-        <div class="j-years"><span class="j-end">2026.02</span><span class="j-start">2018.03</span></div>
-        <div class="j-range" aria-hidden="true"></div>
-        <div class="j-card">
-          <span class="j-when">2018.03 – 2026.02</span>
-          <h3>한국과학기술원 (KAIST) <small>졸업</small></h3>
-          <p>로봇제작 동아리 MR, 인공지능 동아리 Include</p>
-          <div class="j-links">
-            <a href="project.html?id=fruitbox">🍎 Fruit Box RL</a>
-            <a href="project.html?id=antrobot">🤖 개미 로봇</a>
-          </div>
-        </div>
-      </li>
-      <li class="j edu">
-        <div class="j-years"><span class="j-end">2018.02</span><span class="j-start">2017.03</span></div>
-        <div class="j-range" aria-hidden="true"></div>
-        <div class="j-card">
-          <span class="j-when">2017.03 – 2018.02</span>
-          <h3>경산과학고등학교</h3>
-          <p>정보동아리 GSALGO 부장</p>
-        </div>
-      </li>
-    </ol>
+    <div class="jt" id="journey-list"></div>
 
     <h2 id="projects">Projects</h2>
     <div id="project-groups"></div>
@@ -110,17 +59,102 @@
   <script src="assets/common.js"></script>
   <script src="assets/projects.js"></script>
   <script>
-    (function journeyReveal() {
-      const list = document.getElementById("journey-list");
+    // ---------- Journey: 실제 기간 비례 타임라인 (겹침 허용, 종료일에 말풍선) ----------
+    const JOURNEY = [
+      { type: "work", start: "2026.02", end: "2026.08", title: "네이버클라우드", sub: "Video Generation 인턴",
+        desc: "영상 생성 모델 벤치마크 QA, 자기개선 학습 파이프라인, 광고 영상 생성 프로젝트",
+        links: [["🎨 ADGen", "adgen"], ["⚙️ Necro Flow", "necroflow"], ["📊 Annohub", "annohub"]] },
+      { type: "work", start: "2024.06", end: "2025.05", title: "솔리드이엔지", sub: "AI 부서 인턴 · 프리랜서",
+        desc: "RAG 기반 챗봇과 생성형 AI 서비스의 MVP 핵심 알고리즘 개발",
+        links: [["💬 세종시 챗봇 AI 충녕", "sejong"], ["🏭 KAF 매뉴얼 챗봇", "kaf"], ["🖼️ 마음돌봄", "maeum"]] },
+      { type: "edu", start: "2018.03", end: "2026.02", title: "한국과학기술원 (KAIST)", sub: "졸업",
+        desc: "로봇제작 동아리 MR, 인공지능 동아리 Include",
+        links: [["🍎 Fruit Box RL", "fruitbox"], ["🤖 개미 로봇", "antrobot"]] },
+      { type: "edu", start: "2017.03", end: "2018.02", title: "경산과학고등학교", sub: "",
+        desc: "정보동아리 GSALGO 부장", links: [] },
+    ];
+
+    (function journeyTimeline() {
+      const root = document.getElementById("journey-list");
+      const LANES = ["edu", "work"];
+      const toNum = (s, isEnd) => { const [y, m] = s.split(".").map(Number); return y + (m - 1 + (isEnd ? 1 : 0)) / 12; };
+      const items = JOURNEY.map((j, i) => ({ ...j, i, s: toNum(j.start, false), e: toNum(j.end, true) }))
+        .sort((a, b) => b.e - a.e);                                   // 종료일 최신순
+      const top = Math.ceil(Math.max(...items.map(x => x.e)));
+      const bottom = Math.floor(Math.min(...items.map(x => x.s)));
+      const years = [];
+      for (let y = top; y >= bottom; y--) years.push(y);
+
+      root.innerHTML = `
+        <svg class="jt-links" aria-hidden="true"></svg>
+        <div class="jt-axis" aria-hidden="true">${years.map(y => `<div class="jt-tick" data-y="${y}"><span>${y}</span></div>`).join("")}</div>
+        <div class="jt-lanes" aria-hidden="true">${items.map(x =>
+          `<div class="jt-bar ${x.type}" data-k="${x.i}" style="--lane:${LANES.indexOf(x.type)}"></div>`).join("")}</div>
+        <ol class="jt-cards">${items.map(x => `
+          <li class="jt-card ${x.type}" data-k="${x.i}">
+            <span class="jt-when">${x.start} – ${x.end}</span>
+            <h3>${esc(x.title)}${x.sub ? ` <small>${esc(x.sub)}</small>` : ""}</h3>
+            <p>${esc(x.desc)}</p>
+            ${x.links.length ? `<div class="j-links">${x.links.map(([t, id]) => `<a href="project.html?id=${id}">${esc(t)}</a>`).join("")}</div>` : ""}
+          </li>`).join("")}</ol>`;
+
+      const svg = root.querySelector(".jt-links");
+      const lanes = root.querySelector(".jt-lanes");
+      const bars = [...root.querySelectorAll(".jt-bar")];
+      const cards = [...root.querySelectorAll(".jt-card")];
+      const cardsCol = root.querySelector(".jt-cards");
+      const GAP = 14, ANCHOR = 22;   // 카드 간격, 말풍선 꼬리 위치(카드 상단에서)
+
+      function layout() {
+        const narrow = root.clientWidth < 560;
+        const PX = narrow ? 64 : 84;                                // 1년 높이
+        const yOf = t => (top - t) * PX + 10;
+        root.querySelectorAll(".jt-tick").forEach(t => { t.style.top = yOf(+t.dataset.y) + "px"; });
+        items.forEach((x, n) => {
+          bars[n].style.top = yOf(x.e) + "px";
+          bars[n].style.height = Math.max(yOf(x.s) - yOf(x.e), 6) + "px";
+        });
+        // 말풍선: 종료일 높이에 맞추되, 앞 카드와 겹치면 아래로 민다
+        let prevBottom = -Infinity, paths = "";
+        const rootBox = root.getBoundingClientRect();
+        const lanesRight = lanes.getBoundingClientRect().right - rootBox.left;
+        items.forEach((x, n) => {
+          const want = yOf(x.e) - ANCHOR;
+          const cardTop = Math.max(want, prevBottom + GAP, 0);
+          cards[n].style.top = cardTop + "px";
+          prevBottom = cardTop + cards[n].offsetHeight;
+          const bb = bars[n].getBoundingClientRect();
+          const bx = bb.left + bb.width / 2 - rootBox.left, by = yOf(x.e);
+          const cx = cardsCol.offsetLeft - 7, cy = cardTop + ANCHOR;   // 말풍선 꼬리 끝 (transform 영향 없는 offset 기준)
+          const mx = lanesRight + (cx - lanesRight) * 0.5;
+          paths += `<path class="${x.type}" data-k="${x.i}" d="M${bx},${by} H${lanesRight + 4} C${mx},${by} ${mx},${cy} ${cx},${cy}"/>`;
+        });
+        const h = Math.max(yOf(bottom) + 10, prevBottom + 4);
+        root.style.height = h + "px";
+        svg.setAttribute("viewBox", `0 0 ${root.clientWidth} ${h}`);
+        svg.innerHTML = paths;
+        svg.querySelectorAll("path").forEach(p => { p.style.setProperty("--len", Math.ceil(p.getTotalLength())); });
+      }
+
+      // 막대 ↔ 말풍선 함께 강조
+      const hl = (k, on) => root.querySelectorAll(`[data-k="${k}"]`).forEach(el => el.classList.toggle("hl", on));
+      [...bars, ...cards].forEach(el => {
+        el.addEventListener("mouseenter", () => hl(el.dataset.k, true));
+        el.addEventListener("mouseleave", () => hl(el.dataset.k, false));
+      });
+
+      layout();
+      if ("ResizeObserver" in window) new ResizeObserver(() => layout()).observe(root.querySelector(".jt-cards"));
+      addEventListener("resize", layout);
+      document.fonts && document.fonts.ready.then(layout);
+
+      // 스크롤 등장
       if (matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) return;
-      list.classList.add("reveal");
-      const io = new IntersectionObserver(entries => entries.forEach(e => {
-        if (!e.isIntersecting) return;
-        e.target.classList.add("in");
-        io.unobserve(e.target);
-      }), { threshold: 0.25, rootMargin: "0px 0px -40px 0px" });
-      io.observe(list);
-      list.querySelectorAll(".j").forEach(li => io.observe(li));
+      root.classList.add("reveal");
+      const io = new IntersectionObserver(es => es.forEach(e => {
+        if (e.isIntersecting) { root.classList.add("in"); io.disconnect(); }
+      }), { threshold: 0.15 });
+      io.observe(root);
     })();
 
     (function projectTabs() {
