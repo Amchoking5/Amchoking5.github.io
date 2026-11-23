@@ -228,3 +228,21 @@ h3.group small { font-weight: 400; font-size: .82rem; margin-left: 8px; }
 @media (max-width: 780px) {   /* 가로 스크롤 힌트: 오른쪽 끝을 살짝 흐리게 */
   .ms-wrap { -webkit-mask-image: linear-gradient(to right, #000 88%, transparent); mask-image: linear-gradient(to right, #000 88%, transparent); }
 }
+
+/* ---------- pagination ---------- */
+.pager { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; margin-top: 24px; }
+.pg { font: inherit; min-width: 36px; height: 36px; padding: 0 10px; border-radius: 8px; border: 1px solid var(--line);
+  background: var(--bg); color: var(--fg); cursor: pointer; display: inline-grid; place-items: center;
+  font-variant-numeric: tabular-nums; transition: background .15s, border-color .15s; }
+.pg:hover:not(:disabled) { background: var(--card); border-color: var(--accent); }
+.pg:disabled { opacity: .35; cursor: default; }
+.pg.cur { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; cursor: default; }
+.pg.gap { border: 0; min-width: 20px; cursor: default; color: var(--muted); }
+
+/* ---------- projects page ---------- */
+.pall { text-align: right; margin: 14px 0 0; font-size: .92rem; }
+.pgroup h2 { margin: 36px 0 14px; font-size: 1.15rem; }
+.pgroup h2 small { font-weight: 400; color: var(--muted); font-size: .85rem; margin-left: 8px; }
+main > .ptabs { margin-top: 20px; }
+.ppanel { display: flex; flex-direction: column; }
+.ppanel > .pempty { flex: 1; display: flex; flex-direction: column; justify-content: center; }

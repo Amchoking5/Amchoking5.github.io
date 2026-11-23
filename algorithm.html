@@ -10,7 +10,7 @@
   <header class="site">
     <div class="wrap">
       <a class="logo" href="./">유교준</a>
-      <nav><a href="./#projects">Projects</a><a class="on" href="algorithm.html">Algorithm</a><a href="./#contact">Contact</a></nav>
+      <nav><a href="projects.html">Projects</a><a class="on" href="algorithm.html">Algorithm</a><a href="./#contact">Contact</a></nav>
     </div>
   </header>
 
@@ -35,13 +35,13 @@
     </div>
     <div class="count" id="count"></div>
     <ul class="list" id="list"><li class="empty">불러오는 중…</li></ul>
-    <button class="more" id="more" hidden>더 보기</button>
+    <nav class="pager" id="pager" aria-label="페이지"></nav>
   </main>
 
   <script src="assets/common.js"></script>
   <script>
-    const PAGE = 50;
-    let all = [], shown = PAGE;
+    const PER = 20;
+    let all = [], page = 1;
     const $ = id => document.getElementById(id);
     const params = new URLSearchParams(location.search);
 
@@ -50,7 +50,7 @@
       return p.platform === "programmers" ? p.level : "";
     }
 
-    function render() {
+    function filtered() {
       const q = $("q").value.trim().toLowerCase();
       const pf = $("platform").value, tier = $("tier").value, sort = $("sort").value;
       let ps = all.filter(p =>
@@ -59,9 +59,36 @@
         (!q || [p.title, p.pid, p.level, ...p.tags].join(" ").toLowerCase().includes(q)));
       if (sort === "old") ps = [...ps].reverse();
       if (sort === "num") ps = [...ps].sort((a, b) => (+a.pid || 0) - (+b.pid || 0));
-      $("count").textContent = `${ps.length}문제`;
-      $("list").innerHTML = ps.slice(0, shown).map(rowHTML).join("") || '<li class="empty">결과가 없습니다.</li>';
-      $("more").hidden = ps.length <= shown;
+      return ps;
+    }
+
+    function pagerHTML(total) {
+      if (total <= 1) return "";
+      const btn = (n, label, extra = "") => n === page
+        ? `<span class="pg cur" aria-current="page">${label}</span>`
+        : `<button type="button" class="pg ${extra}" data-p="${n}" ${n < 1 || n > total ? "disabled" : ""} aria-label="${label === n ? n + "페이지" : extra}">${label}</button>`;
+      const nums = new Set([1, total, page - 2, page - 1, page, page + 1, page + 2].filter(n => n >= 1 && n <= total));
+      const sorted = [...nums].sort((a, b) => a - b);
+      let out = btn(page - 1, "‹", "이전"), prev = 0;
+      sorted.forEach(n => { if (n - prev > 1) out += `<span class="pg gap">…</span>`; out += btn(n, n); prev = n; });
+      return out + btn(page + 1, "›", "다음");
+    }
+
+    function render(scroll) {
+      const ps = filtered();
+      const total = Math.max(1, Math.ceil(ps.length / PER));
+      page = Math.min(Math.max(1, page), total);
+      const from = (page - 1) * PER;
+      $("count").textContent = ps.length ? `${ps.length}문제 · ${from + 1}–${Math.min(from + PER, ps.length)}` : "0문제";
+      $("list").innerHTML = ps.slice(from, from + PER).map(rowHTML).join("") || '<li class="empty">결과가 없습니다.</li>';
+      $("pager").innerHTML = pagerHTML(total);
+      // 주소에 상태 저장 → 문제를 보고 뒤로가기 하면 같은 페이지로 돌아옴
+      const url = new URL(location);
+      const set = (k, v) => v ? url.searchParams.set(k, v) : url.searchParams.delete(k);
+      set("q", $("q").value.trim()); set("platform", $("platform").value); set("tier", $("tier").value);
+      set("sort", $("sort").value === "new" ? "" : $("sort").value); set("page", page > 1 ? page : "");
+      history.replaceState(null, "", url);
+      if (scroll) $("count").scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
     loadIndex().then(ps => {
@@ -70,13 +97,17 @@
       const order = ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Ruby", "Unrated"];
       tiers.sort((a, b) => (order.indexOf(a) + 1 || 99) - (order.indexOf(b) + 1 || 99) || a.localeCompare(b));
       $("tier").innerHTML += tiers.map(t => `<option>${esc(t)}</option>`).join("");
-      if (params.get("q")) $("q").value = params.get("q");
-      render();
+      for (const k of ["q", "platform", "tier", "sort"]) if (params.get(k)) $(k).value = params.get(k);
+      page = +params.get("page") || 1;
+      render(false);
     }).catch(e => { $("list").innerHTML = `<li class="empty">${esc(e.message)}</li>`; });
 
     ["q", "platform", "tier", "sort"].forEach(id =>
-      $(id).addEventListener("input", () => { shown = PAGE; render(); }));
-    $("more").addEventListener("click", () => { shown += PAGE; render(); });
+      $(id).addEventListener("input", () => { page = 1; render(false); }));
+    $("pager").addEventListener("click", e => {
+      const b = e.target.closest("button[data-p]");
+      if (b && !b.disabled) { page = +b.dataset.p; render(true); }
+    });
   </script>
 </body>
 </html>

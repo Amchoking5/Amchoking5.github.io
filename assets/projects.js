@@ -241,3 +241,18 @@ const PROJECTS = [
     links: [["MR 프로젝트 페이지", "https://mr.kaist.ac.kr/projects/74"]],
   },
 ];
+
+// 프로젝트 카드 (홈 탭, projects.html 공용)
+function projectCardHTML(p) {
+  const uniq = a => a.filter((v, i) => a.indexOf(v) === i);
+  return `
+    <a class="card" href="project.html?id=${p.id}">
+      ${p.gallery.length && p.gallery[0][2] !== "video"
+        ? `<div class="thumb"><img src="${thumbOf(p.gallery[0][1])}" ${fallbackAttr(p.gallery[0][1])} alt="" loading="lazy" decoding="async"></div>`
+        : `<div class="thumb thumb-emoji">${p.emoji}</div>`}
+      <h4>${p.emoji} ${esc(p.title)}</h4>
+      <p class="period">${esc(p.subtitle)} · ${esc(p.period)}</p>
+      <p class="role"><b>역할</b> ${esc(p.roles.join(", "))}</p>
+      <div class="stack">${uniq(Object.values(p.stack).flat()).slice(0, 6).map(t => `<span>${esc(t)}</span>`).join("")}</div>
+    </a>`;
+}

@@ -10,7 +10,7 @@
   <header class="site">
     <div class="wrap">
       <a class="logo" href="./">유교준</a>
-      <nav><a class="on" href="./#projects">Projects</a><a href="algorithm.html">Algorithm</a><a href="./#contact">Contact</a></nav>
+      <nav><a class="on" href="projects.html">Projects</a><a href="algorithm.html">Algorithm</a><a href="./#contact">Contact</a></nav>
     </div>
   </header>
 
@@ -28,14 +28,14 @@
     const p = PROJECTS[idx];
 
     if (!p) {
-      el.innerHTML = `<p class="empty">프로젝트를 찾을 수 없습니다. <a href="./#projects">목록으로</a></p>`;
+      el.innerHTML = `<p class="empty">프로젝트를 찾을 수 없습니다. <a href="projects.html">목록으로</a></p>`;
     } else {
       const group = PROJECT_GROUPS.find(g => g.id === p.group);
       document.title = `${p.title} · 유교준`;
       const prev = PROJECTS[idx - 1], next = PROJECTS[idx + 1];
 
       el.innerHTML = `
-        <a class="back" href="./#projects">← 프로젝트 목록</a>
+        <a class="back" href="projects.html?group=${p.group}">← ${esc(group.title)} 목록</a>
         <div class="proj-head">
           <p class="proj-sub">${esc(group.title)}</p>
           <h1>${p.emoji} ${esc(p.title)}</h1>

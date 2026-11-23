@@ -12,7 +12,7 @@
     <div class="wrap">
       <a class="logo" href="./">유교준</a>
       <nav>
-        <a href="#projects">Projects</a>
+        <a href="projects.html">Projects</a>
         <a href="algorithm.html">Algorithm</a>
         <a href="#contact">Contact</a>
       </nav>
@@ -86,16 +86,7 @@
       const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
       const uniq = a => a.filter((v, i) => a.indexOf(v) === i);
 
-      const cardHTML = p => `
-        <a class="card" href="project.html?id=${p.id}">
-          ${p.gallery.length && p.gallery[0][2] !== "video"
-            ? `<div class="thumb"><img src="${thumbOf(p.gallery[0][1])}" ${fallbackAttr(p.gallery[0][1])} alt="" loading="lazy" decoding="async"></div>`
-            : `<div class="thumb thumb-emoji">${p.emoji}</div>`}
-          <h4>${p.emoji} ${esc(p.title)}</h4>
-          <p class="period">${esc(p.subtitle)} · ${esc(p.period)}</p>
-          <p class="role"><b>역할</b> ${esc(p.roles.join(", "))}</p>
-          <div class="stack">${uniq(Object.values(p.stack).flat()).slice(0, 6).map(t => `<span>${esc(t)}</span>`).join("")}</div>
-        </a>`;
+      const cardHTML = projectCardHTML;
       const panelHTML = g => g.items.length
         ? `<div class="cards">${g.items.map(cardHTML).join("")}</div>`
         : `<div class="pempty"><span>🛠️</span><p>준비 중인 프로젝트예요.<br>곧 추가될 예정입니다.</p></div>`;
@@ -114,7 +105,8 @@
             <button type="button" class="parrow" data-d="1" aria-label="다음 그룹">›</button>
           </div>
         </div>
-        <div class="ppanel" id="ppanel" role="tabpanel"></div>`;
+        <div class="ppanel" id="ppanel" role="tabpanel"></div>
+        <p class="pall"><a href="projects.html">전체 프로젝트 보기 →</a></p>`;
 
       const tabs = [...root.querySelectorAll('[role="tab"]')];
       const ink = root.querySelector(".ptab-ink");
@@ -157,7 +149,6 @@
         busy = true;
         const dir = i > cur ? 1 : -1;
         cur = i; paintMeta(true);
-        panel.style.minHeight = panel.offsetHeight + "px";   // 높이 출렁임 방지
         if (!reduce) {
           const out = panel.animate(
             [{ opacity: 1, transform: "none" }, { opacity: 0, transform: `translateX(${-dir * 32}px)` }],
@@ -166,7 +157,6 @@
           out.cancel();
         }
         const total = enter(dir);
-        panel.style.minHeight = "";
         await wait(Math.min(total, 250));         // 카드가 어느 정도 들어온 뒤 다음 전환 허용
         busy = false;
         if (pending !== null) { const n = pending; pending = null; go(n); }
@@ -188,10 +178,26 @@
         const dx = e.changedTouches[0].clientX - x0; x0 = null;
         if (Math.abs(dx) > 60) go(cur + (dx < 0 ? 1 : -1));
       });
-      addEventListener("resize", moveInk);
+      // 패널 높이를 가장 높은 그룹에 맞춰 고정 → 탭을 바꿔도 아래 섹션 위치가 그대로
+      function fixHeight() {
+        panel.style.minHeight = "";
+        let max = 0;
+        groups.forEach(g => { panel.innerHTML = panelHTML(g); max = Math.max(max, panel.offsetHeight); });
+        panel.innerHTML = panelHTML(groups[cur]);
+        panel.style.minHeight = max + "px";
+        const note = document.getElementById("pnote");   // 그룹 설명 줄도 가장 긴 것에 맞춤 (모바일 줄바꿈 대비)
+        note.style.minHeight = "";
+        let nmax = 0;
+        groups.forEach(g => { note.textContent = g.note; nmax = Math.max(nmax, note.offsetHeight); });
+        note.textContent = groups[cur].note;
+        note.style.minHeight = nmax + "px";
+      }
+      let rz;
+      addEventListener("resize", () => { moveInk(); clearTimeout(rz); rz = setTimeout(() => { if (!busy) fixHeight(); }, 150); });
 
       paintMeta(false);
-      panel.innerHTML = panelHTML(groups[0]);
+      fixHeight();
+      document.fonts && document.fonts.ready.then(() => { if (!busy) fixHeight(); });
       requestAnimationFrame(() => ink.classList.add("ready"));
     })();
 

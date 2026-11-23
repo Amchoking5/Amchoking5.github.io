@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Projects · 유교준</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="site">
+    <div class="wrap">
+      <a class="logo" href="./">유교준</a>
+      <nav><a class="on" href="projects.html">Projects</a><a href="algorithm.html">Algorithm</a><a href="./#contact">Contact</a></nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <h1>Projects</h1>
+    <p class="sub">인턴, 팀, 토이 프로젝트 전체 목록</p>
+
+    <div class="ptabs" role="tablist" aria-label="프로젝트 분류" id="ptabs"></div>
+    <div id="plist" role="tabpanel"></div>
+  </main>
+
+  <footer><div class="wrap">© 유교준 · 회사 프로젝트는 보안상 코드 대신 데모 결과와 아키텍처 위주로 정리했습니다.</div></footer>
+
+  <script src="assets/common.js"></script>
+  <script src="assets/projects.js"></script>
+  <script>
+    const tabsEl = document.getElementById("ptabs");
+    const list = document.getElementById("plist");
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const filters = [{ id: "", short: "전체", count: PROJECTS.length },
+      ...PROJECT_GROUPS.map(g => ({ id: g.id, short: g.short, count: PROJECTS.filter(p => p.group === g.id).length }))];
+
+    tabsEl.innerHTML = filters.map(f =>
+      `<button type="button" role="tab" data-g="${f.id}">${esc(f.short)}<span class="cnt">${f.count}</span></button>`).join("")
+      + `<span class="ptab-ink" aria-hidden="true"></span>`;
+    const tabs = [...tabsEl.querySelectorAll('[role="tab"]')];
+    const ink = tabsEl.querySelector(".ptab-ink");
+
+    let cur = new URLSearchParams(location.search).get("group") || "";
+    if (!filters.some(f => f.id === cur)) cur = "";
+
+    function sectionHTML(g) {
+      const items = PROJECTS.filter(p => p.group === g.id);
+      return `<section class="pgroup">
+        <h2>${esc(g.title)} <small>${esc(g.note)}</small></h2>
+        ${items.length ? `<div class="cards">${items.map(projectCardHTML).join("")}</div>`
+          : `<div class="pempty"><span>🛠️</span><p>준비 중인 프로젝트예요.<br>곧 추가될 예정입니다.</p></div>`}
+      </section>`;
+    }
+
+    function render(animate) {
+      tabs.forEach(t => { const on = t.dataset.g === cur; t.setAttribute("aria-selected", on); t.tabIndex = on ? 0 : -1; });
+      const t = tabs.find(t => t.dataset.g === cur);
+      ink.style.width = t.offsetWidth + "px";
+      ink.style.transform = `translateX(${t.offsetLeft}px)`;
+      const groups = cur ? PROJECT_GROUPS.filter(g => g.id === cur) : PROJECT_GROUPS;
+      list.innerHTML = groups.map(sectionHTML).join("");
+      if (animate && !reduce) {
+        list.querySelectorAll(".pgroup h2, .card, .pempty").forEach((el, i) => el.animate(
+          [{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }],
+          { duration: 420, delay: Math.min(i, 12) * 50, easing: "cubic-bezier(.2,.8,.2,1)", fill: "backwards" }));
+      }
+      const url = new URL(location);
+      cur ? url.searchParams.set("group", cur) : url.searchParams.delete("group");
+      history.replaceState(null, "", url);
+      document.title = `${cur ? filters.find(f => f.id === cur).short + " · " : ""}Projects · 유교준`;
+    }
+
+    tabs.forEach(t => t.addEventListener("click", () => { if (t.dataset.g !== cur) { cur = t.dataset.g; render(true); } }));
+    tabsEl.addEventListener("keydown", e => {
+      const d = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
+      if (!d) return;
+      e.preventDefault();
+      const i = (tabs.findIndex(t => t.dataset.g === cur) + d + tabs.length) % tabs.length;
+      cur = tabs[i].dataset.g; render(true); tabs[i].focus();
+    });
+    addEventListener("resize", () => render(false));
+
+    render(true);
+    requestAnimationFrame(() => ink.classList.add("ready"));
+  </script>
+</body>
+</html>
