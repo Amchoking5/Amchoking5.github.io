@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Algorithm · Demi</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="site">
+    <div class="wrap">
+      <a class="logo" href="./">Demi</a>
+      <nav><a href="./">Home</a><a class="on" href="algorithm.html">Algorithm</a></nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <h1>Algorithm</h1>
+    <p class="sub">백준 · 프로그래머스 · LeetCode 문제 풀이 기록</p>
+
+    <div class="filters">
+      <input id="q" type="search" placeholder="제목, 번호, 분류 검색">
+      <select id="platform">
+        <option value="">모든 사이트</option>
+        <option value="baekjoon">백준</option>
+        <option value="programmers">프로그래머스</option>
+        <option value="leetcode">LeetCode</option>
+      </select>
+      <select id="tier"><option value="">모든 난이도</option></select>
+      <select id="sort">
+        <option value="new">최신순</option>
+        <option value="old">오래된순</option>
+        <option value="num">문제 번호순</option>
+      </select>
+    </div>
+    <div class="count" id="count"></div>
+    <ul class="list" id="list"><li class="empty">불러오는 중…</li></ul>
+    <button class="more" id="more" hidden>더 보기</button>
+  </main>
+
+  <script src="assets/common.js"></script>
+  <script>
+    const PAGE = 50;
+    let all = [], shown = PAGE;
+    const $ = id => document.getElementById(id);
+    const params = new URLSearchParams(location.search);
+
+    function tierOf(p) {
+      if (p.platform === "baekjoon") return p.level.split(" ")[0];
+      return p.platform === "programmers" ? p.level : "";
+    }
+
+    function render() {
+      const q = $("q").value.trim().toLowerCase();
+      const pf = $("platform").value, tier = $("tier").value, sort = $("sort").value;
+      let ps = all.filter(p =>
+        (!pf || p.platform === pf) &&
+        (!tier || tierOf(p) === tier) &&
+        (!q || [p.title, p.pid, p.level, ...p.tags].join(" ").toLowerCase().includes(q)));
+      if (sort === "old") ps = [...ps].reverse();
+      if (sort === "num") ps = [...ps].sort((a, b) => (+a.pid || 0) - (+b.pid || 0));
+      $("count").textContent = `${ps.length}문제`;
+      $("list").innerHTML = ps.slice(0, shown).map(rowHTML).join("") || '<li class="empty">결과가 없습니다.</li>';
+      $("more").hidden = ps.length <= shown;
+    }
+
+    loadIndex().then(ps => {
+      all = ps;
+      const tiers = [...new Set(ps.map(tierOf).filter(Boolean))];
+      const order = ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Ruby", "Unrated"];
+      tiers.sort((a, b) => (order.indexOf(a) + 1 || 99) - (order.indexOf(b) + 1 || 99) || a.localeCompare(b));
+      $("tier").innerHTML += tiers.map(t => `<option>${esc(t)}</option>`).join("");
+      if (params.get("q")) $("q").value = params.get("q");
+      render();
+    }).catch(e => { $("list").innerHTML = `<li class="empty">${esc(e.message)}</li>`; });
+
+    ["q", "platform", "tier", "sort"].forEach(id =>
+      $(id).addEventListener("input", () => { shown = PAGE; render(); }));
+    $("more").addEventListener("click", () => { shown += PAGE; render(); });
+  </script>
+</body>
+</html>

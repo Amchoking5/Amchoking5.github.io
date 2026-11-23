@@ -1,0 +1,5 @@
+data/
+_problem_solving/
+_site/
+__pycache__/
+.env

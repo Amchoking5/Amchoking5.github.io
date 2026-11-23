@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Problem · Demi</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" media="(prefers-color-scheme: light)">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" media="(prefers-color-scheme: dark)">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+</head>
+<body>
+  <header class="site">
+    <div class="wrap">
+      <a class="logo" href="./">Demi</a>
+      <nav><a href="./">Home</a><a class="on" href="algorithm.html">Algorithm</a></nav>
+    </div>
+  </header>
+
+  <main class="wrap" id="post"><p class="empty">불러오는 중…</p></main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+  <script src="assets/common.js"></script>
+  <script>
+    const id = new URLSearchParams(location.search).get("id");
+    const el = document.getElementById("post");
+
+    async function main() {
+      if (!id || !/^[\w-]+$/.test(id)) throw new Error("잘못된 주소입니다.");
+      const res = await fetch(`data/problems/${id}.json`, { cache: "no-cache" });
+      if (!res.ok) throw new Error("문제를 찾을 수 없습니다.");
+      const p = await res.json();
+      document.title = `${p.pid ? p.pid + ". " : ""}${p.title} · Demi`;
+
+      const info = [
+        p.date && `제출 ${fmtDate(p.date)}`,
+        p.memory && `메모리 ${esc(p.memory)}`,
+        p.time && `시간 ${esc(p.time)}`,
+        p.link && `<a href="${esc(p.link)}" target="_blank" rel="noopener">문제 링크 ↗</a>`,
+        `<a href="https://github.com/Amchoking5/Problem_Solving/tree/main/${p.path.split("/").map(encodeURIComponent).join("/")}" target="_blank" rel="noopener">GitHub ↗</a>`,
+      ].filter(Boolean).map(s => `<span>${s}</span>`).join("");
+
+      // 문제 설명은 BaekjoonHub가 저장한 원문 HTML(백준/프로그래머스 사이트 내용)
+      const section = (title, html) => html ? `<h2>${title}</h2><div class="content">${html}</div>` : "";
+
+      el.innerHTML = `
+        <div class="post-head">
+          <div class="badges">${levelBadge(p)}<span class="badge plain">${PLATFORM_NAME[p.platform]}</span></div>
+          <h1>${p.pid ? esc(p.pid) + ". " : ""}${esc(p.title)}</h1>
+          <div class="info">${info}</div>
+          ${p.tags.length ? `<div class="tags">${p.tags.map(t => `<a class="tag" href="algorithm.html?q=${encodeURIComponent(t)}">${esc(t)}</a>`).join("")}</div>` : ""}
+        </div>
+        ${section("문제", p.description)}
+        ${section("입력", p.input)}
+        ${section("출력", p.output)}
+        ${p.notes.length ? `<h2>배운 점</h2>` + p.notes.map(n => `<pre class="note">${esc(n.text)}</pre>`).join("<br>") : ""}
+        <h2>풀이 코드</h2>
+        ${p.codes.map(c => `<div class="code-block"><div class="fname">${esc(c.name)}</div>
+          <pre><code class="language-${esc(c.lang)}">${esc(c.code)}</code></pre></div>`).join("")}
+        <p style="margin-top:40px"><a href="algorithm.html">← 목록으로</a></p>`;
+
+      el.querySelectorAll("pre code").forEach(b => hljs.highlightElement(b));
+      el.querySelectorAll(".content").forEach(c => renderMathInElement(c, {
+        delimiters: [{ left: "$$", right: "$$", display: true }, { left: "$", right: "$", display: false }],
+        throwOnError: false,
+      }));
+    }
+    main().catch(e => { el.innerHTML = `<p class="empty">${esc(e.message)}</p>`; });
+  </script>
+</body>
+</html>

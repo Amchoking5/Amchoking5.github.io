@@ -1,0 +1,61 @@
+# Problem_Solving 저장소를 읽어서 데이터를 만들고 GitHub Pages에 배포한다.
+name: Build & Deploy
+
+on:
+  push:
+    branches: [main]            # 이 홈페이지 저장소를 수정했을 때
+  repository_dispatch:
+    types: [problem-solving-updated]   # Problem_Solving에 푸시됐을 때 (그쪽 workflow가 보냄)
+  workflow_dispatch:            # Actions 탭에서 수동 실행
+  schedule:
+    - cron: "0 15 * * *"        # 혹시 놓친 경우를 위해 매일 00:00 KST
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout site
+        uses: actions/checkout@v4
+
+      - name: Checkout Problem_Solving
+        uses: actions/checkout@v4
+        with:
+          repository: Amchoking5/Problem_Solving
+          path: _problem_solving
+          fetch-depth: 0          # 날짜 추출을 위해 전체 커밋 기록
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build data
+        run: python scripts/build_data.py --src _problem_solving --out data
+
+      - name: Prepare site
+        run: |
+          mkdir _site
+          cp -r index.html algorithm.html problem.html assets data _site/
+          touch _site/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

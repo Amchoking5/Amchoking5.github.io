@@ -1,59 +1,50 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>Demi's Developer Portfolio</title>
-    <style>
-        body {
-            max-width: 900px;
-            margin: 80px auto;
-            padding: 20px;
-            font-family: Arial, sans-serif;
-            line-height: 1.8;
-            color: #333;
-        }
-
-        h1 {
-            font-size: 36px;
-        }
-
-        a {
-            color: #0969da;
-            text-decoration: none;
-        }
-
-        section {
-            margin-top: 50px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Demi's Developer Portfolio</title>
+  <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
+  <header class="site">
+    <div class="wrap">
+      <a class="logo" href="./">Demi</a>
+      <nav><a class="on" href="./">Home</a><a href="algorithm.html">Algorithm</a></nav>
+    </div>
+  </header>
 
+  <main class="wrap">
     <h1>Hello, I'm Demi!</h1>
-    <p>Developer Portfolio & Engineering Notes</p>
+    <p class="sub">Developer Portfolio &amp; Engineering Notes</p>
 
-    <section>
-        <h2>About Me</h2>
-        <p>개발자로 성장하기 위해 공부하고 기록합니다.</p>
-    </section>
+    <h2>About Me</h2>
+    <p>개발자로 성장하기 위해 공부하고 기록합니다.</p>
 
-    <section>
-        <h2>Algorithm</h2>
-        <ul>
-            <li>
-                <a href="#">프로그래머스 - 야근 지수</a>
-            </li>
-            <li>
-                <a href="#">알고리즘 문제 풀이 기록</a>
-            </li>
-        </ul>
-    </section>
+    <h2>Algorithm</h2>
+    <div class="stats" id="stats"></div>
+    <h2 style="font-size:1.05rem;margin-top:28px">최근 푼 문제</h2>
+    <ul class="list" id="recent"><li class="empty">불러오는 중…</li></ul>
+    <p><a href="algorithm.html">전체 문제 보기 →</a></p>
 
-    <section>
-        <h2>Projects</h2>
-        <p>진행한 프로젝트와 개발 경험을 기록합니다.</p>
-    </section>
+    <h2>Projects</h2>
+    <p>진행한 프로젝트와 개발 경험을 기록합니다.</p>
+  </main>
 
+  <footer><div class="wrap">문제 풀이는 <a href="https://github.com/Amchoking5/Problem_Solving">Problem_Solving</a> 저장소에서 자동으로 동기화됩니다.</div></footer>
+
+  <script src="assets/common.js"></script>
+  <script>
+    loadIndex().then(ps => {
+      const by = k => ps.filter(p => p.platform === k).length;
+      document.getElementById("stats").innerHTML = [
+        ["전체", ps.length], ["백준", by("baekjoon")],
+        ["프로그래머스", by("programmers")], ["LeetCode", by("leetcode")],
+      ].map(([l, n]) => `<div class="stat"><b>${n}</b><span>${l}</span></div>`).join("");
+      document.getElementById("recent").innerHTML = ps.slice(0, 8).map(rowHTML).join("");
+    }).catch(e => {
+      document.getElementById("recent").innerHTML = `<li class="empty">${esc(e.message)}</li>`;
+    });
+  </script>
 </body>
 </html>
