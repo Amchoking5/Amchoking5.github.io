@@ -45,6 +45,10 @@ jobs:
           mkdir _site
           cp -r *.html assets data _site/
           touch _site/.nojekyll
+          # 캐시 무효화: assets/*.js, *.css 주소에 커밋 버전을 붙인다
+          v="${GITHUB_SHA::7}-${GITHUB_RUN_NUMBER}"
+          sed -i -E "s#(assets/[A-Za-z0-9_-]+\.(js|css))\"#\1?v=${v}\"#g" _site/*.html
+          grep -ho 'assets/[^"]*?v=[^"]*' _site/*.html | sort -u
 
       - uses: actions/upload-pages-artifact@v3
         with:
