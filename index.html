@@ -83,7 +83,18 @@
 
     (function projectTabs() {
       const root = document.getElementById("project-groups");
-      const groups = PROJECT_GROUPS.map(g => ({ ...g, items: PROJECTS.filter(p => p.group === g.id) }));
+      // 메인에는 그룹마다 최근 MAX개만 (period의 끝 날짜 기준), 표시 순서는 원래 순서 유지
+      const MAX = 3;
+      const endKey = p => { const m = String(p.period || "").match(/\d{4}\.\d{2}/g); return m ? m[m.length - 1] : ""; };
+      const recent = items => {
+        if (items.length <= MAX) return items;
+        const keep = items.slice().sort((a, b) => endKey(b).localeCompare(endKey(a))).slice(0, MAX);
+        return items.filter(p => keep.includes(p));
+      };
+      const groups = PROJECT_GROUPS.map(g => {
+        const all = PROJECTS.filter(p => p.group === g.id);
+        return { ...g, total: all.length, items: recent(all) };
+      });
       const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
       const uniq = a => a.filter((v, i) => a.indexOf(v) === i);
 
@@ -95,7 +106,7 @@
       root.innerHTML = `
         <div class="ptabs" role="tablist" aria-label="프로젝트 분류">
           ${groups.map((g, i) => `<button type="button" role="tab" id="ptab-${g.id}" aria-controls="ppanel"
-              aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}">${esc(g.short)}<span class="cnt">${g.items.length}</span></button>`).join("")}
+              aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}">${esc(g.short)}<span class="cnt">${g.total}</span></button>`).join("")}
           <span class="ptab-ink" aria-hidden="true"></span>
         </div>
         <div class="pmeta">
