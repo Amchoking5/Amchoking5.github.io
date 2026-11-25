@@ -1,4 +1,4 @@
-"""assets/projects.js에 있는 GitHub 첨부 이미지들의 WebP 썸네일을 만든다.
+"""assets/projects.js(와 toy-projects.js)에 있는 GitHub 첨부 이미지들의 WebP 썸네일을 만든다.
 
 사용법:
     python scripts/build_thumbs.py            # thumbs/ 에 생성 (이미 있으면 건너뜀)
@@ -23,7 +23,11 @@ ROOT = Path(__file__).resolve().parent.parent
 
 def asset_ids() -> list[str]:
     src = (ROOT / "assets" / "projects.js").read_text(encoding="utf-8")
-    return sorted(set(re.findall(r'A\("([0-9a-f-]{36})"\)', src)))
+    ids = set(re.findall(r'A\("([0-9a-f-]{36})"\)', src))
+    toy = ROOT / "assets" / "toy-projects.js"  # build_toy.py가 만든 파일 (README에 쓴 첨부 주소)
+    if toy.exists():
+        ids |= set(re.findall(r"user-attachments/assets/([0-9a-f-]{36})", toy.read_text(encoding="utf-8")))
+    return sorted(ids)
 
 
 def fetch(asset_id: str) -> bytes:

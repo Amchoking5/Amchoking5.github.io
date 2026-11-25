@@ -21,6 +21,7 @@
 
   <script src="assets/common.js"></script>
   <script src="assets/projects.js"></script>
+  <script src="assets/toy-projects.js"></script>
   <script>
     const el = document.getElementById("post");
     const id = new URLSearchParams(location.search).get("id");
@@ -45,7 +46,7 @@
         </div>
 
         <h2>개요</h2>
-        <p>${esc(p.summary)}</p>
+        <p>${p.summaryHTML ?? esc(p.summary)}</p>
 
         <h2>핵심 역할</h2>
         <ul class="roles">${p.roles.map(r => `<li>${esc(r)}</li>`).join("")}</ul>
@@ -56,7 +57,7 @@
 
         ${p.features.length ? `<h2>핵심 기능</h2>` + p.features.map(f => `
           <div class="feature"><h3>${esc(f.title)}</h3>
-          <ul>${f.items.map(i => `<li>${esc(i)}</li>`).join("")}</ul></div>`).join("") : ""}
+          <ul>${(f.itemsHTML ?? f.items.map(esc)).map(i => `<li>${i}</li>`).join("")}</ul></div>`).join("") : ""}
 
         ${p.gallery.length ? `<h2>결과물</h2><div class="gallery">${p.gallery.map(([cap, src, type]) =>
           type === "video"
@@ -66,6 +67,8 @@
 
         ${p.structure.length ? `<h2>구조</h2>` + p.structure.map(([cap, src]) =>
           `<figure class="figure-wide" data-src="${src}" data-thumb="${thumbOf(src, 1400)}" data-cap="${esc(cap)}"><img src="${thumbOf(src, 1400)}" ${fallbackAttr(src)} alt="${esc(cap)}" loading="lazy" decoding="async"><figcaption>${esc(cap)}</figcaption></figure>`).join("") : ""}
+
+        ${(p.extra || []).map(s => `<h2>${esc(s.title)}</h2><div class="content">${s.html}</div>`).join("")}
 
         <h2>댓글</h2><div class="comments" id="comments"></div>
 

@@ -5,7 +5,9 @@ on:
   push:
     branches: [main]            # 이 홈페이지 저장소를 수정했을 때
   repository_dispatch:
-    types: [problem-solving-updated]   # Problem_Solving에 푸시됐을 때 (그쪽 workflow가 보냄)
+    types:
+      - problem-solving-updated   # Problem_Solving에 푸시됐을 때 (그쪽 workflow가 보냄)
+      - toy-project-updated       # Toy-Project에 푸시됐을 때 (그쪽 workflow가 보냄)
   workflow_dispatch:            # Actions 탭에서 수동 실행
   schedule:
     - cron: "0 15 * * *"        # 혹시 놓친 경우를 위해 매일 00:00 KST
@@ -33,6 +35,13 @@ jobs:
           path: _problem_solving
           fetch-depth: 0          # 날짜 추출을 위해 전체 커밋 기록
 
+      - name: Checkout Toy-Project
+        uses: actions/checkout@v4
+        with:
+          repository: Amchoking5/Toy-Project
+          path: _toy_project
+          fetch-depth: 0          # period가 비어 있을 때 커밋 날짜로 채우기 위해
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -40,12 +49,17 @@ jobs:
       - name: Build data
         run: python scripts/build_data.py --src _problem_solving --out data
 
+      - name: Build toy projects
+        run: |
+          pip install --quiet pyyaml markdown
+          python scripts/build_toy.py --src _toy_project
+
       # 프로젝트 이미지 썸네일: 캐시에 있는 건 재사용하고 새 이미지만 받아서 변환
       - name: Restore thumbnail cache
         uses: actions/cache@v4
         with:
           path: thumbs
-          key: thumbs-${{ hashFiles('assets/projects.js', 'scripts/build_thumbs.py') }}
+          key: thumbs-${{ hashFiles('assets/projects.js', 'assets/toy-projects.js', 'scripts/build_thumbs.py') }}
           restore-keys: thumbs-
 
       - name: Build thumbnails
@@ -57,6 +71,7 @@ jobs:
         run: |
           mkdir _site
           cp -r *.html assets data thumbs _site/
+          if [ -d toy ]; then cp -r toy _site/; fi
           touch _site/.nojekyll
           # 캐시 무효화: assets/*.js, *.css 주소에 커밋 버전을 붙인다
           v="${GITHUB_SHA::7}-${GITHUB_RUN_NUMBER}"
