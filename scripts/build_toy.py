@@ -9,10 +9,12 @@
 출력:
     assets/toy-projects.js   PROJECTS 배열에 toy 그룹 항목을 추가하는 스크립트
     toy/<id>/...             README에서 참조한 이미지·영상 사본
+    toy/<id>/demo/           frontmatter의 demo로 지정한 정적 웹 페이지 사본
 """
 import argparse
 import html
 import json
+import posixpath
 import re
 import shutil
 import subprocess
@@ -110,14 +112,33 @@ class Assets:
         shutil.copy2(src, dst)
         return f"toy/{self.pid}/" + quote(rel_posix)
 
+    def repo_link(self, rel: str) -> str:
+        """README 기준 상대 링크(../다른 폴더 등)를 GitHub 주소로 바꾼다."""
+        base, _, tail = self.repo_tree.partition("/tree/main/")
+        return f"{base}/tree/main/" + posixpath.normpath(f"{tail}/{rel}")
+
     def rewrite_html(self, h: str) -> str:
         h = re.sub(r'(<img[^>]*\ssrc=")([^"]+)"', lambda m: m.group(1) + self.file(html.unescape(m.group(2))) + '"', h)
         # 이미지가 아닌 상대 링크(코드 파일 등)는 GitHub 원본으로 연결
         return re.sub(
             r'(<a[^>]*\shref=")([^"]+)"',
             lambda m: m.group(1) + (m.group(2) if self.is_external(m.group(2))
-                                    else self.repo_tree + "/" + m.group(2)) + '"',
+                                    else self.repo_link(m.group(2))) + '"',
             h)
+
+
+def copy_demo(folder: Path, rel: str, dst: Path, pid: str) -> str:
+    """frontmatter의 demo(정적 웹 페이지 폴더)를 사이트로 복사한다. 시작 페이지 경로를 돌려준다."""
+    src = (folder / rel).resolve()
+    if folder.resolve() != src and folder.resolve() not in src.parents:
+        print(f"  ! {pid}: demo 경로가 프로젝트 폴더 밖입니다 ({rel})", file=sys.stderr)
+        return ""
+    if not (src / "index.html").is_file():
+        print(f"  ! {pid}: demo 폴더에 index.html이 없습니다 ({rel})", file=sys.stderr)
+        return ""
+    shutil.copytree(src, dst, dirs_exist_ok=True,
+                    ignore=shutil.ignore_patterns("README.md", ".*", "__pycache__", "*.py", "*.exe"))
+    return "index.html"
 
 
 def media_list(raw, assets: Assets, pid: str, key: str):
@@ -163,6 +184,10 @@ def build_project(folder: Path, src: Path, out_assets: Path, repo_url: str, take
     summary_md = str(meta.get("summary") or intro)
     stack = {str(k): [str(x) for x in (v or [])] for k, v in (meta.get("stack") or {}).items()}
     links = [[str(t), str(u)] for t, u in (meta.get("links") or [])]
+    if meta.get("demo"):
+        demo = copy_demo(folder, str(meta["demo"]), out_assets / pid / "demo", pid)
+        if demo:
+            links.insert(0, ["데모 바로가기", f"toy/{pid}/demo/{demo}"])
     links.append(["코드 (GitHub)", repo_tree])
 
     return {
